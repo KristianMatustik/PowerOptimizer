@@ -1,4 +1,5 @@
 #pragma once
+#include "Cyclist.h"
 
 namespace PowerOptimizer
 {

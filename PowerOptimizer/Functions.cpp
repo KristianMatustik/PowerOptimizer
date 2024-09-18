@@ -61,7 +61,7 @@ double PowerOptimizer::Functions::yaw(double bearing1, double bearing2)
 }
 
 
-double PowerOptimizer::Functions::circle_radius(double x1, double y1, double x2, double y2, double x3, double y3)
+double PowerOptimizer::Functions::circleRadius(double x1, double y1, double x2, double y2, double x3, double y3)
 {
     double a = std::sqrt(std::pow(x2 - x1, 2) + std::pow(y2 - y1, 2));
     double b = std::sqrt(std::pow(x3 - x2, 2) + std::pow(y3 - y2, 2));

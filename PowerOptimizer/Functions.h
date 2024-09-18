@@ -17,6 +17,6 @@ namespace PowerOptimizer
 		double velocity(double mass, double kineticEnergy, double inertia = 0);  //inertia mass = I/r^2, wheels
 		double bearing(double lat1, double lon1, double lat2, double lon2);
 		double yaw(double bearing1, double bearing2);
-		double circle_radius(double x1, double y1, double x2, double y2, double x3, double y3);
+		double circleRadius(double x1, double y1, double x2, double y2, double x3, double y3);
 	}
 }

@@ -1,4 +1,6 @@
 #include "Window.h"
+#include <iostream>
+#include "Functions.h"
 
 using namespace System;
 using namespace System::Windows::Forms;

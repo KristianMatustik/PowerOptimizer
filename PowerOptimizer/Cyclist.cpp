@@ -1,5 +1,13 @@
 #include "Cyclist.h"
 
+Cyclist::Cyclist()
+{
+}
+
+Cyclist::~Cyclist()
+{
+}
+
 double Cyclist::CdA(double yaw, double power)
 {
 	if (power > CdA_oos_power)
@@ -11,7 +19,7 @@ double Cyclist::CdA(double yaw, double power)
 			if (yaw < CdA_TT_yaw[i])
 				return CdA_TT[i];
 		}
-		return CdA_TT[CdA_TT_yaw.size()];
+		return CdA_TT[CdA_TT.size()-1];
 	}
 }
 

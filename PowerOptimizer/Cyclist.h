@@ -18,6 +18,8 @@ private:
 	double turnBankAngle;
 
 public:
+	Cyclist();
+	~Cyclist();
 	double CdA(double yaw, double power);
 	void set_CdA(std::vector<double> CdA_TT, std::vector<double> CdA_TT_limit, double CdA_oos, double CdA_oos_limit);
 	double get_mass();

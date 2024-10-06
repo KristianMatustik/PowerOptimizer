@@ -8,9 +8,12 @@
 
 class Track
 {
+	friend class Tester;
+
 private:
 	class Point
 	{
+		friend class Tester;
 		friend class Track;
 	private:
 		double lat, lon;
@@ -18,10 +21,11 @@ private:
 		double altitude;
 		double rho;
 		double crr;
+		double maxSpeed;
+
 		double wind_speed;
 		double wind_bearing;
 		double wind_speed_travel;
-		double maxSpeed;
 
 		double next_distance;
 		double next_bearing;
@@ -40,8 +44,12 @@ private:
 
 	std::vector<Point> route;
 
+
+	void calculate_distances();
+	void calculate_coordinates();
+
+
 public:
-	friend class tester;
 	Track();
 	~Track();
 	void loadGPX(std::string filePath);
@@ -49,13 +57,11 @@ public:
 	void set_crr(double crr);
 	void set_wind(double bearing, double speed);
 	void set_rho(double seaRho = 1.225);
-	void calculate_distances();
-	void initialize(Cyclist rider, double v0 = 5);
+
+	void update_time(Cyclist rider, int start=0);
+
+	void initial_solution(Cyclist rider, double power, double v0 = 5);
 
 	void load(std::string filePath);
 	void save(std::string filePath);
-
-	void update_time(Cyclist rider);
-
-	void test();
 };

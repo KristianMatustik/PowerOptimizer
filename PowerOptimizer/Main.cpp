@@ -1,7 +1,5 @@
 #include "Window.h"
-#include <iostream>
-#include "Functions.h"
-#include "Track.h"
+#include "Tester.h"
 
 using namespace System;
 using namespace System::Windows::Forms;
@@ -10,7 +8,7 @@ using namespace System::Windows::Forms;
 int main(array<String^>^ args)
 {
 	Track t;
-	t.test();
+	t.loadGPX("test.gpx");
 
 	Application::EnableVisualStyles();
 	Application::SetCompatibleTextRenderingDefault(false);

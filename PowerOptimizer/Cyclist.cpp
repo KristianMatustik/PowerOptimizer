@@ -4,11 +4,23 @@ Cyclist::Cyclist()
 {
 }
 
+Cyclist::Cyclist(double mass, double CdA_TT, double CdA_oos, double CdA_oos_power, double efficiency, double brakingForce, double turnBankAngle)
+{
+    this->mass = mass;
+    this->CdA_TT = std::vector<double>{ CdA_TT };
+    this->CdA_TT_yaw = std::vector<double>{};
+    this->CdA_oos = CdA_oos;
+    this->CdA_oos_power = CdA_oos_power;
+    this->efficiency = efficiency;
+    this->brakingForce = brakingForce;
+    this->turnBankAngle = turnBankAngle;
+}
+
 Cyclist::~Cyclist()
 {
 }
 
-double Cyclist::CdA(double yaw, double power)
+double Cyclist::get_CdA(double yaw, double power)
 {
 	if (power > CdA_oos_power)
 		return CdA_oos;

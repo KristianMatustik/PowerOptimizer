@@ -19,8 +19,9 @@ private:
 
 public:
 	Cyclist();
+	Cyclist(double mass, double CdA_TT, double CdA_oos = 0.5, double CdA_oos_power = 1000, double efficiency = 0.97, double brakingForce = 5000, double turnBankAngle = 30);
 	~Cyclist();
-	double CdA(double yaw, double power);
+	double get_CdA(double yaw, double power);
 	void set_CdA(std::vector<double> CdA_TT, std::vector<double> CdA_TT_limit, double CdA_oos, double CdA_oos_limit);
 	double get_mass();
 	void set_mass(double mass);

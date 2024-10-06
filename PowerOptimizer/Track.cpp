@@ -15,16 +15,21 @@ double Track::Point::update(Point& next, Cyclist rider)
 {
     double m = rider.get_mass();
 
-    std::pair<double,double> wind = Functions::addVectors(wind_bearing,wind_speed,Functions::normalizeAngle(next_bearing-180),speed);
-    double yaw = Functions::yaw(wind.first, Functions::normalizeAngle(next_bearing - 180));
+    std::pair<double,double> wind = Functions::addVectors(wind_bearing,wind_speed,next_bearing,speed);
+    double yaw = Functions::yaw(wind.first, next_bearing);
 
-    double cda = rider.CdA(yaw, power);
+    double cda = rider.get_CdA(yaw, power);
+
+    double workAdded = power * time_to_next() * rider.get_efficiency();
+    double potentialChange = Functions::energy_potential(m, altitude) - Functions::energy_potential(m, next.altitude);
+    double aeroLoss = Functions::force_aero(rho, rider.get_CdA(0, 0), speed + wind_speed_travel) * next_distance;
+    double rollLoss = Functions::force_roll(m * g, crr) * next_distance;
 
     next.kineticEnergy = kineticEnergy
-        + power * time_to_next() * rider.get_efficiency()
-        + Functions::energy_potential(m, altitude) - Functions::energy_potential(m, next.altitude)
-        - Functions::force_aero(rho, rider.CdA(0, 0), speed + wind_speed_travel) * next_distance
-        - Functions::force_roll(m * g, crr) * next_distance;
+                            + workAdded
+                            + potentialChange
+                            - aeroLoss
+                            - rollLoss;
     next.speed = Functions::speed_fromKE(m,next.kineticEnergy);
     next.time = time + time_to_next();
 
@@ -40,7 +45,33 @@ double Track::Point::time_to_next()
 
 //////// Track
  
+void Track::calculate_distances()
+{
+    for (int i = 0; i < route.size() - 1; i++)
+    {
+        double lat1 = route[i].lat;
+        double lon1 = route[i].lon;
+        double lat2 = route[i + 1].lat;
+        double lon2 = route[i + 1].lon;
 
+        route[i].next_distance = Functions::distance(lat1, lon1, lat2, lon2);
+        route[i].next_bearing = Functions::bearing(lat1, lon1, lat2, lon2);
+        route[i].next_slope = (route[i + 1].altitude - route[i].altitude) / route[i].next_distance;
+    }
+    route[route.size() - 1].next_distance = 0;
+    route[route.size() - 1].next_bearing = 0;
+}
+
+void Track::calculate_coordinates()
+{
+    route[0].x = 0;
+    route[0].y = 0;
+    for (int i = 1; i < route.size(); i++)
+    {
+        route[i].x = Functions::distance(route[0].lat, route[i].lon, route[0].lat, route[0].lon) * (route[0].lon < route[i].lon ? 1 : -1);
+        route[i].y = Functions::distance(route[i].lat, route[0].lon, route[0].lat, route[0].lon) * (route[0].lat < route[i].lat ? 1 : -1);
+    }
+}
 
 Track::Track()
 {
@@ -96,21 +127,14 @@ void Track::loadGPX(std::string filePath)
         {
             tinyxml2::XMLElement* powerElem = extensions->FirstChildElement("power");
             if (powerElem) {
-                point.power = powerElem->DoubleText();  // Read power value
+                point.power = powerElem->DoubleText();
             }
         }
-        if (route.size() == 0)
-        {
-            point.x = 0;
-            point.y = 0;
-        }
-        else
-        {
-            point.x = Functions::distance(route[0].lat, point.lon, route[0].lat, route[0].lon) * (route[0].lon < point.lon ? 1 : -1);
-            point.y = Functions::distance(point.lat, route[0].lon, route[0].lat, route[0].lon) * (route[0].lat < point.lat ? 1 : -1);
-        }
+
         route.push_back(point);
     }
+
+    calculate_coordinates();
     calculate_distances();
 }
 
@@ -141,33 +165,25 @@ void Track::set_rho(double seaRho)
     }
 }
 
-void Track::calculate_distances()
+void Track::update_time(Cyclist rider, int start)
 {
-    for (int i = 0; i < route.size() - 1; i++)
+    for (int i = start; i < route.size() - 1; i++)
     {
-        double lat1 = route[i].lat;
-        double lon1 = route[i].lon;
-        double lat2 = route[i + 1].lat;
-        double lon2 = route[i + 1].lon;
-
-        route[i].next_distance = Functions::distance(lat1, lon1, lat2, lon2);
-        route[i].next_bearing = Functions::bearing(lat1, lon1, lat2, lon2);
+        route[i].update(route[i + 1], rider);
     }
 }
 
-void Track::initialize(Cyclist rider, double v0)
+void Track::initial_solution(Cyclist rider, double power, double v0)
 {
-    for (int i = 0; i < route.size()-1; i++)
-    {
-        route[i].power = 0;
-        route[i].kineticEnergy = 0;
-        route[i].speed = 0;
-        route[i].time = 0;
-    }
     route[0].kineticEnergy = Functions::energy_kinetic(rider.get_mass(), v0);
     route[0].speed = v0;
-    set_rho();
-    set_crr(0.004);
+    route[0].power = power;
+    for (int i = 0; i < route.size()-1; i++)
+    {
+        route[i].power = power;
+        route[i].update(route[i + 1], rider);
+    }
+    route[route.size() - 1].power = 0;
 }
 
 void Track::load(std::string filename)
@@ -178,28 +194,4 @@ void Track::load(std::string filename)
 void Track::save(std::string filename)
 {
 
-}
-
-void Track::update_time(Cyclist rider)
-{
-    for (int i = 0; i < route.size()-1; i++)
-    {
-        route[i].update(route[i + 1], rider);
-    }
-}
-
-void Track::test()
-{
-    Cyclist rider;
-    rider.set_CdA(std::vector<double>{0.2}, std::vector<double>{}, 0.4, 350);
-    rider.set_mass(80);
-    rider.set_efficiency(0.98);
-
-    loadGPX("test.gpx");
-    initialize(rider);
-    for (int i = 0; i < route.size() - 1; i++)
-    {
-        route[i].power = 300;
-    }
-    update_time(rider);
 }

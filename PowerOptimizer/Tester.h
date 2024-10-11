@@ -5,17 +5,18 @@
 
 class Tester
 {
-	Track track;
-
-	Cyclist c = Cyclist(90, 0.2);
-
+	Track* _track;
 public:
+	Tester();
+	Tester(Track* track);
+
+	Track*& track();
+
 	void print();
 
 	void setFlat(int length);
+	void setSquare(int sideLength);
 	void setHill(int length, double slope, int start=0);
-
-	void loadTrack(std::string filename);
-	void testSteady(double power);
+	void setCorner(int length, double radius);
 };
 

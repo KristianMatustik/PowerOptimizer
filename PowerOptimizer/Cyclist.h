@@ -2,36 +2,44 @@
 #include "Setup.h"
 #include <vector>
 #include <string>
-#include <fstream>
-#include <iostream>
 
 class Cyclist
 {
 private:
-	double mass;
-	std::vector<double> CdA_TT;
-	std::vector<double> CdA_TT_yaw;
-	double CdA_oos;
-	double CdA_oos_power;
-	double efficiency;
-	double brakingForce;
-	double turnBankAngle;
+	double mass;					//mass of the system=rider+bike+equipment
+	double mass_wheelInertia;		//inertia of wheels, as artifical mass for rolling, no slip (=I/R^2)
+	std::vector<double> CdA_TT;		//size n, CdA at different yaw angles, e.g. [0.2,0.21,0.22] (at 0-5°/5-10°/10°-180° respectively)
+	std::vector<double> CdA_TT_yaw; //size n-1, the dividing points of CdA_TT, eg. [5°,10°] for prev example (0 and 180 are always considered 1st/last)
+	double CdA_oos;					//CdA when riding out of saddle
+	double CdA_oos_power;			//power transition point, when cyclist rides out of saddle (e.g. 500 W)
+	double efficiency;				//power train efficiency, how much power turn into actual work done (e.g. 0.97 = 97 %)
+	double brakingForce;			//force at which can rider decelerate when braking, 5000N
+	double turnBankAngle;			//angle at which rider can lean the bike going through corner
 
 public:
-	Cyclist();
-	Cyclist(double mass, double CdA_TT, double CdA_oos = 0.5, double CdA_oos_power = 1000, double efficiency = 0.97, double brakingForce = 5000, double turnBankAngle = 30);
+	Cyclist(double mass = DEFAULT_MASS, double CdA_TT = DEFAULT_CDA_TT, double CdA_oos = DEFAULT_CDA_OOS, double CdA_oos_power = DEFAULT_POWER_OOS,
+		double efficiency = DEFAULT_EFFICIENCY, double brakingForce = DEFAULT_FORCE_BRAKING, double turnBankAngle = DEFAULT_BANKANGLE);
 	~Cyclist();
-	double get_CdA(double yaw, double power);
-	void set_CdA(std::vector<double> CdA_TT, std::vector<double> CdA_TT_limit, double CdA_oos, double CdA_oos_limit);
-	double get_mass();
+
+	double get_mass() const;
 	void set_mass(double mass);
-	double get_efficiency();
+
+	double get_mass_wheelInertia() const;
+	void set_mass_wheelInertia(double inertia_mass);
+
+	double get_CdA(double yaw, double power) const;
+	void set_CdA(const std::vector<double>& CdA_TT, const std::vector<double>& CdA_TT_limit, double CdA_oos=0, double CdA_oos_limit=0);
+	void set_CdA(double CdA_TT, double CdA_oos=0, double CdA_oos_limit=0);
+
+	double get_efficiency() const;
 	void set_efficiency(double efficieny);
-	double get_brakingForce();
+
+	double get_brakingForce() const;
 	void set_brakingForce(double brakingForce);
-	double get_turnBankAngle();
+
+	double get_turnBankAngle() const;
 	void set_turnBankAngle(double turnBankAngle);
 
-	void save(std::string filePath);
+	void save(std::string filePath) const;
 	void load(std::string filePath);
 };

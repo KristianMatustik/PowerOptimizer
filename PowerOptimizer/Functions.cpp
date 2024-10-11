@@ -1,6 +1,6 @@
 #include "Functions.h"
 #include <limits>
-
+#include <stdexcept>
 
 double Functions::energy_kinetic(double mass, double velocity)
 {
@@ -10,7 +10,7 @@ double Functions::energy_kinetic(double mass, double velocity)
 
 double Functions::energy_potential(double mass, double height)
 {
-    return mass * g * height;
+    return mass * G * height;
 }
 
 
@@ -36,34 +36,35 @@ double Functions::bearing(double lat1, double lon1, double lat2, double lon2)
 {
     double phi1 = degToRad(lat1);
     double phi2 = degToRad(lat2);
-    double deltaLambda = degToRad(lon2 - lon1);
+    double dPhi = degToRad(lon2 - lon1);
 
-    double y = std::sin(deltaLambda) * std::cos(phi2);
+    double y = std::sin(dPhi) * std::cos(phi2);
     double x = std::cos(phi1) * std::sin(phi2)
-        - std::sin(phi1) * std::cos(phi2) * std::cos(deltaLambda);
+        - std::sin(phi1) * std::cos(phi2) * std::cos(dPhi);
 
     double bearing = std::atan2(y, x);
     bearing = radToDeg(bearing);
-    bearing = std::fmod((bearing + 360.0), 360.0);
+    bearing = normalizeAngle(bearing);
 
     return bearing;
 }
 
 double Functions::distance(double lat1, double lon1, double lat2, double lon2)
 {
+    //maybe change for some more precise method, use library, ...
     const double R = 6371000;
 
-    double lat1Rad = degToRad(lat1);
-    double lon1Rad = degToRad(lon1);
-    double lat2Rad = degToRad(lat2);
-    double lon2Rad = degToRad(lon2);
+    lat1 = degToRad(lat1);
+    lon1 = degToRad(lon1);
+    lat2 = degToRad(lat2);
+    lon2 = degToRad(lon2);
 
-    double dLat = lat2Rad - lat1Rad;
-    double dLon = lon2Rad - lon1Rad;
+    double dLat = lat2 - lat1;
+    double dLon = lon2 - lon1;
 
-    double a = std::sin(dLat / 2) * std::sin(dLat / 2) +
-        std::cos(lat1Rad) * std::cos(lat2Rad) *
-        std::sin(dLon / 2) * std::sin(dLon / 2);
+    double a =  std::sin(dLat / 2) * std::sin(dLat / 2) +
+                std::cos(lat1) * std::cos(lat2) *
+                std::sin(dLon / 2) * std::sin(dLon / 2);
     double c = 2 * std::atan2(std::sqrt(a), std::sqrt(1 - a));
 
     return R * c;
@@ -82,7 +83,16 @@ double Functions::yaw(double bearing1, double bearing2)
 
 std::pair<double, double> Functions::addVectors(double bearing1, double magnitude1, double bearing2, double magnitude2)
 {
-    //maybe later change to cosine law formula, could be faster
+    //maybe later change to cosine law formula, could be faster (less trig)
+    if (magnitude1 < 0)
+    {
+        bearing1 = normalizeAngle(bearing1 + 180);
+    }
+    if (magnitude2 < 0)
+    {
+        bearing2 = normalizeAngle(bearing2 + 180);
+    }
+
     std::pair<double, double> result;
     double bearing1Rad = degToRad(bearing1);
     double bearing2Rad = degToRad(bearing2);
@@ -97,8 +107,7 @@ std::pair<double, double> Functions::addVectors(double bearing1, double magnitud
     
     double magnitude3 = std::sqrt(x3 * x3 + y3 * y3);
     double bearing3 = 90 - radToDeg(std::atan2(y3, x3));
-    if (bearing3 < 0)
-        bearing3 += 360;
+    bearing3 = normalizeAngle(bearing3);
 
     result.first = bearing3;
     result.second = magnitude3;
@@ -136,9 +145,30 @@ double Functions::radToDeg(double radians)
 
 double Functions::normalizeAngle(double angle)
 {
-    while (angle < 0)
-        angle += 360;
-    while (angle > 360)
-        angle -= 360;
+    angle = std::fmod(angle, 360.0);
+
+    if (angle < 0)
+        angle += 360.0;
+
     return angle;
+}
+
+double Functions::power_average(double P)
+{
+    return P;
+}
+
+double Functions::power_average_inv(double P)
+{
+    return P;
+}
+
+double Functions::power_normalized(double P)
+{
+    return std::pow(P,4);
+}
+
+double Functions::power_normalized_inv(double P)
+{
+    return std::pow(P,0.25);
 }

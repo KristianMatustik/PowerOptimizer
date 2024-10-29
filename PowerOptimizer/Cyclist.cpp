@@ -5,13 +5,14 @@
 #include <iostream>
 
 
-Cyclist::Cyclist(double mass, double CdA_TT, double CdA_oos, double CdA_oos_power, double efficiency, double brakingForce, double turnBankAngle)
+Cyclist::Cyclist(double mass, double CdA_TT, double CdA_oos, double CdA_oos_power, double efficiency, double brakingForce, double turnBankAngle, double wheelMassInertia)
 {
     set_mass(mass);
     set_CdA(CdA_TT, CdA_oos, CdA_oos_power);
     set_efficiency(efficiency);
     set_brakingForce(brakingForce);
     set_turnBankAngle(turnBankAngle);
+    set_mass_wheelInertia(wheelMassInertia);
 }
 
 Cyclist::~Cyclist() = default;
@@ -56,7 +57,7 @@ double Cyclist::get_CdA(double yaw, double power) const
     }
 }
 
-void Cyclist::set_CdA(const std::vector<double>& CdA_TT, const std::vector<double>& CdA_TT_limit, double CdA_oos, double CdA_oos_power)
+void Cyclist::set_CdA(const std::vector<double>& CdA_TT, const std::vector<double>& CdA_TT_limit, double CdA_oos, double CdA_oos_limit)
 {
     if (CdA_TT.size() - 1 != CdA_TT_limit.size())
     {
@@ -84,14 +85,8 @@ void Cyclist::set_CdA(const std::vector<double>& CdA_TT, const std::vector<doubl
     {
         throw std::exception("Negative CdA value (oos)");
     }
-    if (CdA_oos_power <= 0)
-    {
-        this->CdA_oos_power = std::numeric_limits<double>::infinity();
-    }
-    else
-    {
-        this->CdA_oos_power = CdA_oos_power;
-    }
+
+    this->CdA_oos_power = CdA_oos_limit;
     this->CdA_TT = CdA_TT;
     this->CdA_TT_yaw = CdA_TT_limit;
     this->CdA_oos = CdA_oos;   

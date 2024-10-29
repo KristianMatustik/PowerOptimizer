@@ -1,4 +1,5 @@
 #pragma once
+#include <limits>
 
 #define G 9.8
 #define DEFAULT_SEA_RHO 1.225
@@ -11,3 +12,5 @@
 #define DEFAULT_FORCE_BRAKING 200
 #define DEFAULT_BANKANGLE 30
 #define DEFAULT_EFFICIENCY 0.97
+#define DEFAULT_WHEEL_INERTIA 2.5
+#define INF std::numeric_limits<double>::infinity()

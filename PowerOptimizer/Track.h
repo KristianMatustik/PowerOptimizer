@@ -1,6 +1,7 @@
 #pragma once
 
 #include "Cyclist.h"
+#include <functional>
 
 
 class Track
@@ -72,9 +73,9 @@ private:
 		double get_time() const;
 		double get_speed() const;
 
-		void set_starting_speed(const Cyclist& rider, double v0);
+		void set_starting_speed(const Cyclist& cyclist, double v0);
 
-		double update_next(const Cyclist& rider);
+		double update_next(const Cyclist& cyclist);
 	};
 
 	std::vector<Point> route;
@@ -82,8 +83,8 @@ private:
 public:
 	Track();
 	~Track();
-	void load_GPX(std::string filePath);
-	void save_GPX(std::string filePath);
+	void load_GPX(const std::string& filePath);
+	void save_GPX(const std::string& filePath);
 
 	void clear();
 
@@ -101,7 +102,7 @@ public:
 	double update_time(const Cyclist& rider, int start=0, int end=-1);
 	void initial_solution(const Cyclist& rider, double power, double v0 = 5);
 
-	double averagePower_weighted(double (*f)(double), double (*f_inv)(double)) const;
+	double averagePower_weighted(std::function<double(double)> f, std::function<double(double)> f_inv) const;
 	int size() const;
 
 	void save(std::string filePath) const;

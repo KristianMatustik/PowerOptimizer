@@ -1,16 +1,20 @@
 #pragma once
 #include "Track.h"
+#include "Optimizer.h"
 
 #define step 1
 
 class Tester
 {
-	Track* _track;
-public:
-	Tester();
-	Tester(Track* track);
+	Track& _track;
+	Cyclist& _cyclist;
+	Optimizer optimizer;
 
-	Track*& track();
+public:
+	Tester(Track& track, Cyclist& cyclist);
+
+	Track& track();
+	Cyclist& cyclist();
 
 	void print();
 

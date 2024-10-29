@@ -1,5 +1,4 @@
 #include "Functions.h"
-#include <limits>
 #include <stdexcept>
 
 double Functions::energy_kinetic(double mass, double velocity)
@@ -127,7 +126,7 @@ double Functions::circleRadius(double x1, double y1, double x2, double y2, doubl
     double area = std::sqrt(s * (s - a) * (s - b) * (s - c));
 
     if (area == 0)
-        return std::numeric_limits<double>::infinity();
+        return INF;
 
     double radius = (a * b * c) / (4 * area);
     return radius;

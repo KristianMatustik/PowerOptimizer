@@ -5,12 +5,12 @@
 #include <iostream>
 
 
-Cyclist::Cyclist(double mass, double CdA_TT, double CdA_oos, double CdA_oos_power, double efficiency, double brakingForce, double turnBankAngle, double wheelMassInertia)
+Cyclist::Cyclist(double mass, double CdA_TT, double CdA_oos, double CdA_oos_power, double efficiency, double brakingDeceleration, double turnBankAngle, double wheelMassInertia)
 {
     set_mass(mass);
     set_CdA(CdA_TT, CdA_oos, CdA_oos_power);
     set_efficiency(efficiency);
-    set_brakingForce(brakingForce);
+    set_brakingDeceleration(brakingDeceleration);
     set_turnBankAngle(turnBankAngle);
     set_mass_wheelInertia(wheelMassInertia);
 }
@@ -110,16 +110,16 @@ void Cyclist::set_efficiency(double efficiency)
 	this->efficiency = efficiency;
 }
 
-double Cyclist::get_brakingForce() const
+double Cyclist::get_brakingDeceleration() const
 {
-	return brakingForce;
+	return brakingDeceleration;
 }
 
-void Cyclist::set_brakingForce(double brakingForce)
+void Cyclist::set_brakingDeceleration(double brakingDeceleration)
 {
-    if (brakingForce<=0)
+    if (brakingDeceleration<=0)
         throw std::invalid_argument("Braking force not positive");
-	this->brakingForce = brakingForce;
+	this->brakingDeceleration = brakingDeceleration;
 }
 
 double Cyclist::get_turnBankAngle() const
@@ -132,6 +132,26 @@ void Cyclist::set_turnBankAngle(double turnBankAngle)
     if (turnBankAngle<=0 || turnBankAngle>=90)
         throw std::invalid_argument("Turn angle not between 0 and 90");
 	this->turnBankAngle = turnBankAngle;
+}
+
+const std::vector<double>& Cyclist::get_CdA_TT() const
+{
+    return CdA_TT;
+}
+
+const std::vector<double>& Cyclist::get_CdA_TT_yaw() const
+{
+    return CdA_TT_yaw;
+}
+
+const double Cyclist::get_CdAoos() const
+{
+    return CdA_oos;
+}
+
+const double Cyclist::get_CdAoosPower() const
+{
+    return CdA_oos_power;
 }
 
 void Cyclist::save(std::string filePath) const
@@ -148,7 +168,7 @@ void Cyclist::save(std::string filePath) const
     outFile.write(reinterpret_cast<const char*>(&CdA_oos), sizeof(CdA_oos));
     outFile.write(reinterpret_cast<const char*>(&CdA_oos_power), sizeof(CdA_oos_power));
     outFile.write(reinterpret_cast<const char*>(&efficiency), sizeof(efficiency));
-    outFile.write(reinterpret_cast<const char*>(&brakingForce), sizeof(brakingForce));
+    outFile.write(reinterpret_cast<const char*>(&brakingDeceleration), sizeof(brakingDeceleration));
     outFile.write(reinterpret_cast<const char*>(&turnBankAngle), sizeof(turnBankAngle));
 
     size_t size_TT = CdA_TT.size();
@@ -171,7 +191,7 @@ void Cyclist::load(std::string filePath)
     }
 
     double tempMass, tempMassWheelInertia, tempCdA_oos, tempCdA_oos_power,
-            tempEfficiency, tempBrakingForce, tempTurnBankAngle;
+            tempEfficiency, tempBrakingDeceleration, tempTurnBankAngle;
     size_t size_TT, size_TT_yaw;
 
     inFile.read(reinterpret_cast<char*>(&tempMass), sizeof(tempMass));
@@ -179,7 +199,7 @@ void Cyclist::load(std::string filePath)
     inFile.read(reinterpret_cast<char*>(&tempCdA_oos), sizeof(tempCdA_oos));
     inFile.read(reinterpret_cast<char*>(&tempCdA_oos_power), sizeof(tempCdA_oos_power));
     inFile.read(reinterpret_cast<char*>(&tempEfficiency), sizeof(tempEfficiency));
-    inFile.read(reinterpret_cast<char*>(&tempBrakingForce), sizeof(tempBrakingForce));
+    inFile.read(reinterpret_cast<char*>(&tempBrakingDeceleration), sizeof(tempBrakingDeceleration));
     inFile.read(reinterpret_cast<char*>(&tempTurnBankAngle), sizeof(tempTurnBankAngle));
     inFile.read(reinterpret_cast<char*>(&size_TT), sizeof(size_TT));
     inFile.read(reinterpret_cast<char*>(&size_TT_yaw), sizeof(size_TT_yaw));
@@ -198,7 +218,7 @@ void Cyclist::load(std::string filePath)
         set_mass_wheelInertia(tempMassWheelInertia);
         set_CdA(tempCdA_TT, tempCdA_TT_yaw, tempCdA_oos, tempCdA_oos_power);
         set_efficiency(tempEfficiency);
-        set_brakingForce(tempBrakingForce);
+        set_brakingDeceleration(tempBrakingDeceleration);
         set_turnBankAngle(tempTurnBankAngle);
     }
     catch (const std::exception& e)

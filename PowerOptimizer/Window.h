@@ -1,6 +1,8 @@
 #pragma once
 #include "Optimizer.h"
+#include "CyclistSettingsDialog.h"
 #include <msclr/marshal_cppstd.h>
+#include <iostream>
 
 namespace PowerOptimizer
 {
@@ -22,6 +24,11 @@ namespace PowerOptimizer
 		{
 			InitializeComponent();
 			optimizer = new Optimizer();
+			optimizer->cyclist() = new Cyclist();
+			optimizer->cyclist()->set_CdA(	std::vector<double>{0.2, 0.2, 0.2, 0.2, 0.2},
+											std::vector<double>{5, 10, 15, 20},
+											0.4,
+											500);
 			updateMenuItems();
 			//
 			//TODO: Add the constructor code here
@@ -34,9 +41,9 @@ namespace PowerOptimizer
 		/// </summary>
 		~Window()
 		{
-			if (components)
+			//if (components)
 			{
-				delete components;
+				//delete components;
 			}
 		}
 
@@ -44,7 +51,7 @@ namespace PowerOptimizer
 		/// <summary>
 		/// Required designer variable.
 		/// </summary>
-		System::ComponentModel::Container ^components;
+		//System::ComponentModel::Container ^components;
 
 	private: Optimizer* optimizer = nullptr;
 
@@ -52,38 +59,26 @@ namespace PowerOptimizer
 
 	private: System::Windows::Forms::ToolStripDropDownButton^ toolStripDropDownTrack;
 	private: System::Windows::Forms::ToolStripDropDownButton^ toolStripDropDownCyclist;
-
-
-
+	private: System::Windows::Forms::ToolStripButton^ toolStripButtonModelSetup;
 	private: System::Windows::Forms::ToolStripSeparator^ toolStripSeparator1;
 	private: System::Windows::Forms::ToolStripButton^ toolStripButtonSolve;
 	private: System::Windows::Forms::ToolStripButton^ toolStripButtonCancel;
-
-
 	private: System::Windows::Forms::ToolStripSeparator^ toolStripSeparator2;
 	private: System::Windows::Forms::ToolStripProgressBar^ toolStripProgressBarSolvingState;
 
 	private: System::Windows::Forms::ToolStripMenuItem^ toolStripMenuTrackLoadGPX;
-	private: System::Windows::Forms::ToolStripMenuItem^ toolStripMenuTrackSaveGPX;
-
-
-
 	private: System::Windows::Forms::ToolStripMenuItem^ toolStripMenuTrackLoadFile;
-	private: System::Windows::Forms::ToolStripMenuItem^ toolStripMenuTrackSaveFile;
-
-
 	private: System::Windows::Forms::ToolStripSeparator^ toolStripSeparator3;
 	private: System::Windows::Forms::ToolStripMenuItem^ toolStripMenuTrackSetup;
-
 	private: System::Windows::Forms::ToolStripSeparator^ toolStripSeparator4;
-	private: System::Windows::Forms::ToolStripMenuItem^ toolStripMenuCyclistLoadFile;
+	private: System::Windows::Forms::ToolStripMenuItem^ toolStripMenuTrackSaveGPX;
+	private: System::Windows::Forms::ToolStripMenuItem^ toolStripMenuTrackSaveFile;
 
+	private: System::Windows::Forms::ToolStripMenuItem^ toolStripMenuCyclistLoadFile;
 	private: System::Windows::Forms::ToolStripSeparator^ toolStripSeparator5;
 	private: System::Windows::Forms::ToolStripMenuItem^ toolStripMenuCyclistSetup;
-
 	private: System::Windows::Forms::ToolStripSeparator^ toolStripSeparator6;
 	private: System::Windows::Forms::ToolStripMenuItem^ toolStripMenuCyclistSaveFile;
-	private: System::Windows::Forms::ToolStripButton^ toolStripButtonModelSetup;
 
 
 	#pragma region Windows Form Designer generated code
@@ -432,11 +427,50 @@ namespace PowerOptimizer
 			}
 			updateMenuItems();
 		}
+
 		private: System::Void toolStripMenuCyclistSetup_Click(System::Object^ sender, System::EventArgs^ e)
 		{
+			PowerOptimizer::CyclistSettingsDialog^ dialog = gcnew PowerOptimizer::CyclistSettingsDialog();
+			try
+			{
+				dialog->numericUpDown_Mass->Value = (Decimal)optimizer->cyclist()->get_mass();
+				dialog->numericUpDown_WheelInertia->Value = (Decimal)optimizer->cyclist()->get_mass_wheelInertia();
+				dialog->numericUpDown_Yaw_0to5->Value = (Decimal)optimizer->cyclist()->get_CdA_TT()[0];
+				dialog->numericUpDown_Yaw_5to10->Value = (Decimal)optimizer->cyclist()->get_CdA_TT()[1];
+				dialog->numericUpDown_Yaw_10to15->Value = (Decimal)optimizer->cyclist()->get_CdA_TT()[2];
+				dialog->numericUpDown_Yaw_15to20->Value = (Decimal)optimizer->cyclist()->get_CdA_TT()[3];
+				dialog->numericUpDown_Yaw_20up->Value = (Decimal)optimizer->cyclist()->get_CdA_TT()[4];
+				dialog->numericUpDown_CdAoos->Value = (Decimal)optimizer->cyclist()->get_CdAoos();
+				dialog->numericUpDown_TransitionPower->Value = (Decimal)optimizer->cyclist()->get_CdAoosPower();
+				dialog->numericUpDown_Efficiency->Value = (Decimal)optimizer->cyclist()->get_efficiency();
+				dialog->numericUpDown_BrakingDeceleration->Value = (Decimal)optimizer->cyclist()->get_brakingDeceleration();
+				dialog->numericUpDown_TurningBankAngle->Value = (Decimal)optimizer->cyclist()->get_turnBankAngle();
+
+				if (dialog->ShowDialog() == System::Windows::Forms::DialogResult::OK)
+				{
+					optimizer->cyclist()->set_mass((double)dialog->numericUpDown_Mass->Value);
+					optimizer->cyclist()->set_mass_wheelInertia((double)dialog->numericUpDown_WheelInertia->Value);
+					optimizer->cyclist()->set_CdA(	std::vector<double>		{(double)dialog->numericUpDown_Yaw_0to5->Value,
+																			(double)dialog->numericUpDown_Yaw_5to10->Value,
+																			(double)dialog->numericUpDown_Yaw_10to15->Value,
+																			(double)dialog->numericUpDown_Yaw_15to20->Value,
+																			(double)dialog->numericUpDown_Yaw_20up->Value	},
+													std::vector<double>{5,10,15,20},
+													(double)dialog->numericUpDown_CdAoos->Value,
+													(double)dialog->numericUpDown_TransitionPower->Value);
+					optimizer->cyclist()->set_efficiency((double)dialog->numericUpDown_Efficiency->Value);
+					optimizer->cyclist()->set_brakingDeceleration((double)dialog->numericUpDown_BrakingDeceleration->Value);
+					optimizer->cyclist()->set_turnBankAngle((double)dialog->numericUpDown_TurningBankAngle->Value);
+				}
+			}
+			finally
+			{
+				delete dialog;
+			}
 
 			updateMenuItems();
 		}
+
 		private: System::Void toolStripMenuCyclistSaveFile_Click(System::Object^ sender, System::EventArgs^ e)
 		{
 			SaveFileDialog^ saveFileDialog = gcnew SaveFileDialog();

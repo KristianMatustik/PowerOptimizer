@@ -1,4 +1,5 @@
 #include "Window.h"
+#include "CyclistSettingsDialog.h"
 #include "Tester.h"
 #include <iostream>
 #include "Functions.h"

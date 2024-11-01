@@ -13,12 +13,12 @@ private:
 	double CdA_oos;					//CdA when riding out of saddle
 	double CdA_oos_power;			//power transition point, when cyclist rides out of saddle (e.g. 500 W)
 	double efficiency;				//power train efficiency, how much power turn into actual work done (e.g. 0.97 = 97 %)
-	double brakingForce;			//force at which can rider decelerate when braking, 5000N
+	double brakingDeceleration;			//force at which can rider decelerate when braking, 5000N
 	double turnBankAngle;			//angle at which rider can lean the bike going through corner
 
 public:
 	Cyclist(double mass = DEFAULT_MASS, double CdA_TT = DEFAULT_CDA_TT, double CdA_oos = DEFAULT_CDA_OOS, double CdA_oos_power = DEFAULT_POWER_OOS,
-		double efficiency = DEFAULT_EFFICIENCY, double brakingForce = DEFAULT_FORCE_BRAKING, double turnBankAngle = DEFAULT_BANKANGLE, double wheelMassInertia = DEFAULT_WHEEL_INERTIA);
+		double efficiency = DEFAULT_EFFICIENCY, double brakingForce = DEFAULT_BRAKING_DECELERATION, double turnBankAngle = DEFAULT_BANKANGLE, double wheelMassInertia = DEFAULT_WHEEL_INERTIA);
 	~Cyclist();
 
 	double get_mass() const;
@@ -34,11 +34,16 @@ public:
 	double get_efficiency() const;
 	void set_efficiency(double efficieny);
 
-	double get_brakingForce() const;
-	void set_brakingForce(double brakingForce);
+	double get_brakingDeceleration() const;
+	void set_brakingDeceleration(double brakingForce);
 
 	double get_turnBankAngle() const;
 	void set_turnBankAngle(double turnBankAngle);
+
+	const std::vector<double>& get_CdA_TT() const;
+	const std::vector<double>& get_CdA_TT_yaw() const;
+	const double get_CdAoos() const;
+	const double get_CdAoosPower() const;
 
 	void save(std::string filePath) const;
 	void load(std::string filePath);

@@ -119,6 +119,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Cyclist.cpp" />
+    <ClCompile Include="CyclistSettingsDialog.cpp" />
     <ClCompile Include="Functions.cpp" />
     <ClCompile Include="Main.cpp" />
     <ClCompile Include="Optimizer.cpp" />
@@ -129,6 +130,9 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Cyclist.h" />
+    <ClInclude Include="CyclistSettingsDialog.h">
+      <FileType>CppForm</FileType>
+    </ClInclude>
     <ClInclude Include="Functions.h" />
     <ClInclude Include="Optimizer.h" />
     <ClInclude Include="Setup.h" />
@@ -140,6 +144,9 @@
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
+    <EmbeddedResource Include="CyclistSettingsDialog.resx">
+      <DependentUpon>CyclistSettingsDialog.h</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="Window.resx">
       <DependentUpon>Window.h</DependentUpon>
     </EmbeddedResource>

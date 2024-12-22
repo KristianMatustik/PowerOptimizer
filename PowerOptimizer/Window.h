@@ -1,6 +1,7 @@
 #pragma once
 #include "Optimizer.h"
 #include "CyclistSettingsDialog.h"
+#include "TrackSettingsDialog.h"
 #include <msclr/marshal_cppstd.h>
 #include <iostream>
 
@@ -41,9 +42,9 @@ namespace PowerOptimizer
 		/// </summary>
 		~Window()
 		{
-			//if (components)
+			if (components)
 			{
-				//delete components;
+				delete components;
 			}
 		}
 
@@ -51,9 +52,10 @@ namespace PowerOptimizer
 		/// <summary>
 		/// Required designer variable.
 		/// </summary>
-		//System::ComponentModel::Container ^components;
+		System::ComponentModel::Container ^components;
 
 	private: Optimizer* optimizer = nullptr;
+	private: int view = 0; //0=map, 1=graph
 
 	private: System::Windows::Forms::ToolStrip^ toolStrip;
 
@@ -65,6 +67,7 @@ namespace PowerOptimizer
 	private: System::Windows::Forms::ToolStripButton^ toolStripButtonCancel;
 	private: System::Windows::Forms::ToolStripSeparator^ toolStripSeparator2;
 	private: System::Windows::Forms::ToolStripProgressBar^ toolStripProgressBarSolvingState;
+	private: System::Windows::Forms::ToolStripDropDownButton^ toolStripDropDownView;
 
 	private: System::Windows::Forms::ToolStripMenuItem^ toolStripMenuTrackLoadGPX;
 	private: System::Windows::Forms::ToolStripMenuItem^ toolStripMenuTrackLoadFile;
@@ -79,6 +82,10 @@ namespace PowerOptimizer
 	private: System::Windows::Forms::ToolStripMenuItem^ toolStripMenuCyclistSetup;
 	private: System::Windows::Forms::ToolStripSeparator^ toolStripSeparator6;
 	private: System::Windows::Forms::ToolStripMenuItem^ toolStripMenuCyclistSaveFile;
+
+	private: System::Windows::Forms::ToolStripMenuItem^ toolStripMenuViewMap;
+	private: System::Windows::Forms::ToolStripMenuItem^ toolStripMenuViewGraph;
+
 
 
 	#pragma region Windows Form Designer generated code
@@ -110,6 +117,9 @@ namespace PowerOptimizer
 			this->toolStripButtonCancel = (gcnew System::Windows::Forms::ToolStripButton());
 			this->toolStripSeparator2 = (gcnew System::Windows::Forms::ToolStripSeparator());
 			this->toolStripProgressBarSolvingState = (gcnew System::Windows::Forms::ToolStripProgressBar());
+			this->toolStripDropDownView = (gcnew System::Windows::Forms::ToolStripDropDownButton());
+			this->toolStripMenuViewMap = (gcnew System::Windows::Forms::ToolStripMenuItem());
+			this->toolStripMenuViewGraph = (gcnew System::Windows::Forms::ToolStripMenuItem());
 			this->toolStrip->SuspendLayout();
 			this->SuspendLayout();
 			// 
@@ -117,10 +127,10 @@ namespace PowerOptimizer
 			// 
 			this->toolStrip->Font = (gcnew System::Drawing::Font(L"Segoe UI", 12));
 			this->toolStrip->GripStyle = System::Windows::Forms::ToolStripGripStyle::Hidden;
-			this->toolStrip->Items->AddRange(gcnew cli::array< System::Windows::Forms::ToolStripItem^  >(8) {
+			this->toolStrip->Items->AddRange(gcnew cli::array< System::Windows::Forms::ToolStripItem^  >(9) {
 				this->toolStripDropDownTrack,
 					this->toolStripDropDownCyclist, this->toolStripButtonModelSetup, this->toolStripSeparator1, this->toolStripButtonSolve, this->toolStripButtonCancel,
-					this->toolStripSeparator2, this->toolStripProgressBarSolvingState
+					this->toolStripSeparator2, this->toolStripProgressBarSolvingState, this->toolStripDropDownView
 			});
 			this->toolStrip->Location = System::Drawing::Point(0, 0);
 			this->toolStrip->Name = L"toolStrip";
@@ -147,7 +157,7 @@ namespace PowerOptimizer
 			// 
 			this->toolStripMenuTrackLoadGPX->DisplayStyle = System::Windows::Forms::ToolStripItemDisplayStyle::Text;
 			this->toolStripMenuTrackLoadGPX->Name = L"toolStripMenuTrackLoadGPX";
-			this->toolStripMenuTrackLoadGPX->Size = System::Drawing::Size(180, 26);
+			this->toolStripMenuTrackLoadGPX->Size = System::Drawing::Size(147, 26);
 			this->toolStripMenuTrackLoadGPX->Text = L"Load GPX";
 			this->toolStripMenuTrackLoadGPX->Click += gcnew System::EventHandler(this, &Window::toolStripMenuTrackLoadGPX_Click);
 			// 
@@ -155,33 +165,33 @@ namespace PowerOptimizer
 			// 
 			this->toolStripMenuTrackLoadFile->DisplayStyle = System::Windows::Forms::ToolStripItemDisplayStyle::Text;
 			this->toolStripMenuTrackLoadFile->Name = L"toolStripMenuTrackLoadFile";
-			this->toolStripMenuTrackLoadFile->Size = System::Drawing::Size(180, 26);
+			this->toolStripMenuTrackLoadFile->Size = System::Drawing::Size(147, 26);
 			this->toolStripMenuTrackLoadFile->Text = L"Load file";
 			this->toolStripMenuTrackLoadFile->Click += gcnew System::EventHandler(this, &Window::toolStripMenuTrackLoadFile_Click);
 			// 
 			// toolStripSeparator3
 			// 
 			this->toolStripSeparator3->Name = L"toolStripSeparator3";
-			this->toolStripSeparator3->Size = System::Drawing::Size(177, 6);
+			this->toolStripSeparator3->Size = System::Drawing::Size(144, 6);
 			// 
 			// toolStripMenuTrackSetup
 			// 
 			this->toolStripMenuTrackSetup->DisplayStyle = System::Windows::Forms::ToolStripItemDisplayStyle::Text;
 			this->toolStripMenuTrackSetup->Name = L"toolStripMenuTrackSetup";
-			this->toolStripMenuTrackSetup->Size = System::Drawing::Size(180, 26);
+			this->toolStripMenuTrackSetup->Size = System::Drawing::Size(147, 26);
 			this->toolStripMenuTrackSetup->Text = L"Setup";
 			this->toolStripMenuTrackSetup->Click += gcnew System::EventHandler(this, &Window::toolStripMenuTrackSetup_Click);
 			// 
 			// toolStripSeparator4
 			// 
 			this->toolStripSeparator4->Name = L"toolStripSeparator4";
-			this->toolStripSeparator4->Size = System::Drawing::Size(177, 6);
+			this->toolStripSeparator4->Size = System::Drawing::Size(144, 6);
 			// 
 			// toolStripMenuTrackSaveGPX
 			// 
 			this->toolStripMenuTrackSaveGPX->DisplayStyle = System::Windows::Forms::ToolStripItemDisplayStyle::Text;
 			this->toolStripMenuTrackSaveGPX->Name = L"toolStripMenuTrackSaveGPX";
-			this->toolStripMenuTrackSaveGPX->Size = System::Drawing::Size(180, 26);
+			this->toolStripMenuTrackSaveGPX->Size = System::Drawing::Size(147, 26);
 			this->toolStripMenuTrackSaveGPX->Text = L"Save GPX";
 			this->toolStripMenuTrackSaveGPX->Click += gcnew System::EventHandler(this, &Window::toolStripMenuTrackSaveGPX_Click);
 			// 
@@ -189,7 +199,7 @@ namespace PowerOptimizer
 			// 
 			this->toolStripMenuTrackSaveFile->DisplayStyle = System::Windows::Forms::ToolStripItemDisplayStyle::Text;
 			this->toolStripMenuTrackSaveFile->Name = L"toolStripMenuTrackSaveFile";
-			this->toolStripMenuTrackSaveFile->Size = System::Drawing::Size(180, 26);
+			this->toolStripMenuTrackSaveFile->Size = System::Drawing::Size(147, 26);
 			this->toolStripMenuTrackSaveFile->Text = L"Save file";
 			this->toolStripMenuTrackSaveFile->Click += gcnew System::EventHandler(this, &Window::toolStripMenuTrackSaveFile_Click);
 			// 
@@ -286,6 +296,35 @@ namespace PowerOptimizer
 			this->toolStripProgressBarSolvingState->Name = L"toolStripProgressBarSolvingState";
 			this->toolStripProgressBarSolvingState->Size = System::Drawing::Size(117, 28);
 			// 
+			// toolStripDropDownView
+			// 
+			this->toolStripDropDownView->Alignment = System::Windows::Forms::ToolStripItemAlignment::Right;
+			this->toolStripDropDownView->BackgroundImageLayout = System::Windows::Forms::ImageLayout::Center;
+			this->toolStripDropDownView->DisplayStyle = System::Windows::Forms::ToolStripItemDisplayStyle::Text;
+			this->toolStripDropDownView->DropDownItems->AddRange(gcnew cli::array< System::Windows::Forms::ToolStripItem^  >(2) {
+				this->toolStripMenuViewMap,
+					this->toolStripMenuViewGraph
+			});
+			this->toolStripDropDownView->Image = (cli::safe_cast<System::Drawing::Image^>(resources->GetObject(L"toolStripDropDownView.Image")));
+			this->toolStripDropDownView->ImageTransparentColor = System::Drawing::Color::Magenta;
+			this->toolStripDropDownView->Name = L"toolStripDropDownView";
+			this->toolStripDropDownView->Size = System::Drawing::Size(57, 28);
+			this->toolStripDropDownView->Text = L"View";
+			// 
+			// toolStripMenuViewMap
+			// 
+			this->toolStripMenuViewMap->Name = L"toolStripMenuViewMap";
+			this->toolStripMenuViewMap->Size = System::Drawing::Size(180, 26);
+			this->toolStripMenuViewMap->Text = L"Map";
+			this->toolStripMenuViewMap->Click += gcnew System::EventHandler(this, &Window::toolStripMenuViewMap_Click);
+			// 
+			// toolStripMenuViewGraph
+			// 
+			this->toolStripMenuViewGraph->Name = L"toolStripMenuViewGraph";
+			this->toolStripMenuViewGraph->Size = System::Drawing::Size(180, 26);
+			this->toolStripMenuViewGraph->Text = L"Graph";
+			this->toolStripMenuViewGraph->Click += gcnew System::EventHandler(this, &Window::toolStripMenuViewGraph_Click);
+			// 
 			// Window
 			// 
 			this->AutoScaleDimensions = System::Drawing::SizeF(7, 15);
@@ -303,8 +342,8 @@ namespace PowerOptimizer
 			this->PerformLayout();
 
 		}
+	#pragma endregion
 
-		#pragma endregion
 		private: System::Void toolStripMenuTrackLoadGPX_Click(System::Object^ sender, System::EventArgs^ e)
 		{
 			OpenFileDialog^ openFileDialog = gcnew OpenFileDialog();
@@ -358,6 +397,25 @@ namespace PowerOptimizer
 		}
 		private: System::Void toolStripMenuTrackSetup_Click(System::Object^ sender, System::EventArgs^ e)
 		{
+			PowerOptimizer::TrackSettingsDialog^ dialog = gcnew PowerOptimizer::TrackSettingsDialog();
+			try
+			{
+				dialog->numericUpDown_Crr->Value = (Decimal)(*optimizer->track())[0].get_crr();
+				dialog->numericUpDown_Density->Value = (Decimal)optimizer->track()->get_seaRho();
+				dialog->numericUpDown_WindSpeed->Value = (Decimal)(*optimizer->track())[0].get_wind_speed();
+				dialog->numericUpDown_WindBearing->Value = (Decimal)(*optimizer->track())[0].get_wind_bearing();
+
+				if (dialog->ShowDialog() == System::Windows::Forms::DialogResult::OK)
+				{
+					optimizer->track()->set_crr((double)dialog->numericUpDown_Crr->Value);
+					optimizer->track()->set_wind((double)dialog->numericUpDown_WindBearing->Value, (double)dialog->numericUpDown_WindSpeed->Value);
+					optimizer->track()->set_rho((double)dialog->numericUpDown_Density->Value);
+				}
+			}
+			finally
+			{
+				delete dialog;
+			}
 
 			updateMenuItems();
 		}
@@ -519,7 +577,30 @@ namespace PowerOptimizer
 			
 			toolStripMenuTrackSaveGPX->Enabled = optimizer->track();
 			toolStripMenuTrackSaveFile->Enabled = optimizer->track();
+			toolStripMenuTrackSetup->Enabled = optimizer->track();
 			toolStripMenuCyclistSaveFile->Enabled = optimizer->cyclist();
+		}
+
+		private: System::Void toolStripMenuViewMap_Click(System::Object^ sender, System::EventArgs^ e)
+		{
+			view = 0;
+		}
+		private: System::Void toolStripMenuViewGraph_Click(System::Object^ sender, System::EventArgs^ e)
+		{
+			view = 1;
+		}
+
+		private: void draw()
+		{
+			switch (view)
+			{
+			case 0:
+				break;
+			case 1:
+				break;
+			default:
+				break;
+			}
 		}
 	};
 }

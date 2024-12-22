@@ -72,6 +72,7 @@ private:
 
 		double get_time() const;
 		double get_speed() const;
+		double get_slope() const;
 
 		void set_starting_speed(const Cyclist& cyclist, double v0);
 
@@ -79,6 +80,7 @@ private:
 	};
 
 	std::vector<Point> route;
+	double seaRho_global = DEFAULT_SEA_RHO;
 
 public:
 	Track();
@@ -104,6 +106,7 @@ public:
 
 	double averagePower_weighted(std::function<double(double)> f, std::function<double(double)> f_inv) const;
 	int size() const;
+	double get_seaRho() const;
 
 	void save(std::string filePath) const;
 	void load(std::string filePath);

@@ -16,6 +16,10 @@ private:
 	double brakingDeceleration;			//force at which can rider decelerate when braking, 5000N
 	double turnBankAngle;			//angle at which rider can lean the bike going through corner
 
+
+	double get_CdA_yawStepsPowerOOS(double yaw = 0, double power = 0) const;
+	double get_CdA_yawInterpolatedPowerOOS(double yaw = 0, double power = 0) const;
+
 public:
 	Cyclist(double mass = DEFAULT_MASS, double CdA_TT = DEFAULT_CDA_TT, double CdA_oos = DEFAULT_CDA_OOS, double CdA_oos_power = DEFAULT_POWER_OOS,
 		double efficiency = DEFAULT_EFFICIENCY, double brakingForce = DEFAULT_BRAKING_DECELERATION, double turnBankAngle = DEFAULT_BANKANGLE, double wheelMassInertia = DEFAULT_WHEEL_INERTIA);
@@ -27,7 +31,7 @@ public:
 	double get_mass_wheelInertia() const;
 	void set_mass_wheelInertia(double inertia_mass);
 
-	double get_CdA(double yaw, double power) const;
+	double get_CdA(double yaw=0, double power=0, double slope=0, double velocity=0) const;
 	void set_CdA(const std::vector<double>& CdA_TT, const std::vector<double>& CdA_TT_limit, double CdA_oos=0, double CdA_oos_limit=INF);
 	void set_CdA(double CdA_TT, double CdA_oos=0, double CdA_oos_limit=0);
 

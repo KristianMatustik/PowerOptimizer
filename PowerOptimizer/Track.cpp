@@ -103,7 +103,7 @@ void Track::Point::calculate_rho(double seaRho)
 {
     if (seaRho < 0)
         throw std::invalid_argument("Negative sea Rho");
-    rho = seaRho * (11000 - altitude) / 11000;
+    rho = seaRho * std::exp(-altitude/10400);
 }
 
 double Track::Point::get_crr() const
@@ -211,6 +211,11 @@ double Track::Point::get_time() const
 double Track::Point::get_speed() const
 {
     return speed;
+}
+
+double Track::Point::get_slope() const
+{
+    return (next->altitude-this->altitude)/next_distance;
 }
 
 void Track::Point::set_starting_speed(const Cyclist& cyclist, double v0)
@@ -323,6 +328,8 @@ void Track::clear()
 
 void Track::push_GPS(double lat, double lon, double alt, double crr, double seaRho)
 {
+    if (seaRho != DEFAULT_SEA_RHO)
+        seaRho_global = -1;
     Point p;
     p.initialize_GPS(lat, lon, alt, crr, seaRho);
     route.push_back(p);
@@ -332,6 +339,8 @@ void Track::push_GPS(double lat, double lon, double alt, double crr, double seaR
 
 void Track::push_xy(double x, double y, double alt, double crr, double seaRho)
 {
+    if (seaRho != DEFAULT_SEA_RHO)
+        seaRho_global = -1;
     Point p;
     p.initialize_xy(x, y, alt, crr, seaRho);
     route.push_back(p);
@@ -388,6 +397,7 @@ void Track::set_wind(double bearing, double speed)
 
 void Track::set_rho(double seaRho)
 {
+    seaRho_global = seaRho;
     for (int i = 0; i < route.size(); i++)
     {
         route[i].calculate_rho(seaRho);
@@ -449,6 +459,11 @@ double Track::averagePower_weighted(std::function<double(double)> f, std::functi
 int Track::size() const
 {
     return route.size();
+}
+
+double Track::get_seaRho() const
+{
+    return seaRho_global;
 }
 
 void Track::save(std::string filename) const

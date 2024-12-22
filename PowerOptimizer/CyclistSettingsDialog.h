@@ -418,14 +418,14 @@ namespace PowerOptimizer
 			this->numericUpDown_Yaw_20up->TabIndex = 13;
 			this->numericUpDown_Yaw_20up->Value = System::Decimal(gcnew cli::array< System::Int32 >(4) { 2, 0, 0, 65536 });
 			// 
-			// numericUpDown__Yaw_15to20
+			// numericUpDown_Yaw_15to20
 			// 
 			this->numericUpDown_Yaw_15to20->Anchor = System::Windows::Forms::AnchorStyles::None;
 			this->numericUpDown_Yaw_15to20->DecimalPlaces = 3;
 			this->numericUpDown_Yaw_15to20->Increment = System::Decimal(gcnew cli::array< System::Int32 >(4) { 1, 0, 0, 196608 });
 			this->numericUpDown_Yaw_15to20->Location = System::Drawing::Point(351, 30);
 			this->numericUpDown_Yaw_15to20->Maximum = System::Decimal(gcnew cli::array< System::Int32 >(4) { 1, 0, 0, 0 });
-			this->numericUpDown_Yaw_15to20->Name = L"numericUpDown__Yaw_15to20";
+			this->numericUpDown_Yaw_15to20->Name = L"numericUpDown_Yaw_15to20";
 			this->numericUpDown_Yaw_15to20->Size = System::Drawing::Size(63, 20);
 			this->numericUpDown_Yaw_15to20->TabIndex = 12;
 			this->numericUpDown_Yaw_15to20->Value = System::Decimal(gcnew cli::array< System::Int32 >(4) { 2, 0, 0, 65536 });

@@ -5,6 +5,42 @@
 #include <iostream>
 
 
+double Cyclist::get_CdA_yawStepsPowerOOS(double yaw, double power) const
+{
+    if (power > CdA_oos_power)
+        return CdA_oos;
+    else
+    {
+        for (int i = 0; i < CdA_TT_yaw.size(); i++)
+        {
+            if (yaw < CdA_TT_yaw[i])
+                return CdA_TT[i];
+        }
+        return CdA_TT[CdA_TT.size() - 1];
+    }
+}
+
+double Cyclist::get_CdA_yawInterpolatedPowerOOS(double yaw, double power) const
+{
+    if (power > CdA_oos_power)
+        return CdA_oos;
+    else
+    {
+        for (int i = 0; i < CdA_TT_yaw.size(); i++)
+        {
+            if (yaw < CdA_TT_yaw[i])
+            {
+                double CdA1 = CdA_TT[i];
+                double CdA2 = CdA_TT[i + 1];
+                double yaw1 = i > 0 ? CdA_TT_yaw[i-1] : 0;
+                double yaw2 = CdA_TT_yaw[i];
+                return CdA1 + (CdA2 - CdA1) * (yaw - yaw1) / (yaw2 - yaw1);
+            }
+        }
+        return CdA_TT[CdA_TT.size() - 1];
+    }
+}
+
 Cyclist::Cyclist(double mass, double CdA_TT, double CdA_oos, double CdA_oos_power, double efficiency, double brakingDeceleration, double turnBankAngle, double wheelMassInertia)
 {
     set_mass(mass);
@@ -42,19 +78,9 @@ void Cyclist::set_mass_wheelInertia(double inertia_mass)
     mass_wheelInertia = inertia_mass;
 }
 
-double Cyclist::get_CdA(double yaw, double power) const
+double Cyclist::get_CdA(double yaw, double power, double slope, double velocity) const
 {
-    if (power > CdA_oos_power)
-        return CdA_oos;
-    else
-    {
-        for (int i = 0; i < CdA_TT_yaw.size(); i++)
-        {
-            if (yaw < CdA_TT_yaw[i])
-                return CdA_TT[i];
-        }
-        return CdA_TT[CdA_TT.size() - 1];
-    }
+    return get_CdA_yawInterpolatedPowerOOS();
 }
 
 void Cyclist::set_CdA(const std::vector<double>& CdA_TT, const std::vector<double>& CdA_TT_limit, double CdA_oos, double CdA_oos_limit)

@@ -122,6 +122,7 @@
     <ClCompile Include="CyclistSettingsDialog.cpp" />
     <ClCompile Include="Functions.cpp" />
     <ClCompile Include="Main.cpp" />
+    <ClCompile Include="ModelSettingsDialog.cpp" />
     <ClCompile Include="Optimizer.cpp" />
     <ClCompile Include="Tester.cpp" />
     <ClCompile Include="tinyxml2.cpp" />
@@ -134,6 +135,9 @@
       <FileType>CppForm</FileType>
     </ClInclude>
     <ClInclude Include="Functions.h" />
+    <ClInclude Include="ModelSettingsDialog.h">
+      <FileType>CppForm</FileType>
+    </ClInclude>
     <ClInclude Include="Optimizer.h" />
     <ClInclude Include="Setup.h" />
     <ClInclude Include="Tester.h" />
@@ -149,6 +153,9 @@
   <ItemGroup>
     <EmbeddedResource Include="CyclistSettingsDialog.resx">
       <DependentUpon>CyclistSettingsDialog.h</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="ModelSettingsDialog.resx">
+      <DependentUpon>ModelSettingsDialog.h</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="TrackSettingsDialog.resx">
       <DependentUpon>TrackSettingsDialog.h</DependentUpon>

@@ -3,36 +3,42 @@
 #include "Track.h"
 #include <functional>
 #include <cmath>
+#include "Setup.h"
 
 
 
 class Optimizer
 {
+public:
 	static const std::function<double(double)> AP;
 	static const std::function<double(double)> AP_inv;
 	static const std::function<double(double)> NP;
 	static const std::function<double(double)> NP_inv;
 
-	void adjust_power_f(std::function<double(double)>, std::function<double(double)>, double P_lim, double P_max = INF);
-	void adjust_power_CP(double CP, double W, double P_max = INF);
+	void improve(const std::function<double(double)>&, const std::function<double(double)>&, const std::vector<double>& adj_gradient, double dW, double k);
+	void improve_NP(const std::vector<double>& adj_gradient, double dP); //temporary till fixed some bugs with common method
 
-	void optimize_simple_f(std::function<double(double)>, std::function<double(double)>, double P_lim, double P_max = INF, double iters = 30, double r = 0.9, double dp = 20);
-	void optimize_simple_CP(double CP, double W, double P_max = INF);
+	void adjust_power_f(const std::function<double(double)>&, const std::function<double(double)>&, double P_lim, double P_max = INF, double P_eps = P_EPS);
+	void adjust_power_CP(double CP, double W_max, double W_start, double W_end, const std::vector<double>& dP, const std::vector<double>& adj_gradient, double P_max = INF, double W_eps = W_EPS);
+	std::vector<double> W_balance(double CP, double W_max, double W_start);
 
-	void optimize_f(std::function<double(double)>, std::function<double(double)>, double P_lim, double P_max = INF, double iters = 30, double r = 0.9, double dp = 20);
-	void optimize_CP(double CP, double W, double P_max = INF);
-	void adjust_f(std::function<double(double)>, std::function<double(double)>, double P_lim, double P_max = INF);
-	void adjust_CP(double CP, double W, double P_max = INF);
+	void optimize_simple_f(const std::function<double(double)>&, const std::function<double(double)>&, double v0, double P_lim, double P_max = INF, double dt = DT, double steps = STEPS, double firstStepDP = FIRST_STEP, double dW = DW_AP, double P_eps = P_EPS, double t_eps = T_EPS);
+	void optimize_simple_CP(double v0, double CP, double W_max, double P_max = INF, double W_start=-1, double W_end=0, double dt = DT, double steps = STEPS, double firstStepDP = FIRST_STEP, double dW = DW_AP, double W_eps = W_EPS);
+
+	void optimize_f(const std::function<double(double)>&, const std::function<double(double)>&, double P_lim, double P_max = INF, double dt = DT, double steps = STEPS, double firstStepDP = FIRST_STEP, double dW = DW_AP, double P_eps = P_EPS, double t_eps = T_EPS);
+	void optimize_CP(double CP, double W_max, double P_max = INF, double dt = DT, double steps = STEPS, double firstStepDP = FIRST_STEP, double dW = DW_AP, double W_eps = W_EPS);
+
+	std::vector<double> calculate_dP(const std::function<double(double)>& f,
+		const std::function<double(double)>& f_inv, double dW = DW_AP);
+	std::vector<double> calculate_gradient(const std::function<double(double)>& f,
+		const std::function<double(double)>& f_inv, double dt = -1, double dW = DW_AP, std::vector<double> dP = {});
+	std::vector<double> adjusted_gradient(const std::vector<double>&);
 
 
-	std::vector<double> calculate_gradient(std::function<double(double)> f,
-		std::function<double(double)> f_inv, double t = -1, double dp = 1);
-	std::vector<int> gradient_to_adjustment(const std::vector<double>&);
-
-	double progress = 0;
 	Cyclist* _cyclist;
 	Track* _track;
 public:
+	double progress = 0; // to be implemented progressbar
 
 	Optimizer();
 	Optimizer(Track* track, Cyclist* cyclist);
@@ -40,11 +46,8 @@ public:
 
 	Cyclist*& cyclist();
 	Track*& track();
-									
-	std::vector<double> calculate_gradient_AP(double t = -1, double dp = 1);
-	std::vector<double> calculate_gradient_NP(double t = -1, double dp = 1);
 
-	void solve_AP(double P_lim, double P_max = INF, double iters = 30, double r = 0.9, double dp = 20);
-	void solve_NP(double P_lim, double iters = 30, double r = 0.9, double dp = 20);
-	void solve_CP();
+	void solve_AP(double P_lim, double P_max = INF, double dt = DT, double steps = STEPS, double firstStepDP = FIRST_STEP, double dW = DW_AP, double P_eps = P_EPS, double t_eps = T_EPS);
+	void solve_NP(double P_lim, double P_max = INF, double dt = DT, double steps = STEPS, double firstStepDP = FIRST_STEP, double dW = DW_NP, double P_eps = P_EPS, double t_eps = T_EPS);
+	void solve_CP(double CP, double W, double P_max = INF, double dt = DT, double steps = STEPS, double firstStepDP = FIRST_STEP, double dW = DW_AP, double W_eps = W_EPS);
 };

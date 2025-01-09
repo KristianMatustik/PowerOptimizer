@@ -1,5 +1,8 @@
 #include "Functions.h"
 #include <stdexcept>
+#include <ctime>
+#include <iomanip>
+#include <sstream>
 
 double Functions::energy_kinetic(double mass, double velocity)
 {
@@ -170,4 +173,89 @@ double Functions::power_normalized(double P)
 double Functions::power_normalized_inv(double P)
 {
     return std::pow(P,0.25);
+}
+
+std::string Functions::time_to_string(double t, const std::string& timeStrBase)
+{
+    std::tm baseTimeStruct = {};
+    std::istringstream baseStream(timeStrBase);
+    baseStream >> std::get_time(&baseTimeStruct, "%Y-%m-%dT%H:%M:%S");
+    if (baseStream.fail())
+    {
+        throw std::invalid_argument("Invalid base time string format");
+    }
+    time_t baseTime = std::mktime(&baseTimeStruct);
+    if (baseTime == -1)
+    {
+        throw std::invalid_argument("Failed to convert base time to time_t");
+    }
+    time_t adjustedTime = baseTime + static_cast<time_t>(t);
+
+
+    std::ostringstream oss;
+    oss << std::put_time(std::gmtime(&adjustedTime), "%Y-%m-%dT%H:%M:%S");
+
+    double fractionalPart = t - static_cast<int>(t);
+    std::ostringstream fractionalStream;
+    fractionalStream << std::fixed << std::setprecision(5) << fractionalPart;
+    std::string fractionalStr = fractionalStream.str();
+    fractionalStr.erase(0, 1);
+    oss << fractionalStr;
+    oss << "Z";
+    return oss.str();
+}
+
+double Functions::string_to_time(const std::string& timeStr, const std::string& timeStrBase)
+{
+    std::tm baseTimeStruct = {};
+    std::istringstream baseStream(timeStrBase.substr(0, 19));
+    baseStream >> std::get_time(&baseTimeStruct, "%Y-%m-%dT%H:%M:%S");
+
+    if (baseStream.fail())
+    {
+        throw std::invalid_argument("Invalid base time string format");
+    }
+    time_t baseTime = std::mktime(&baseTimeStruct);
+    if (baseTime == -1)
+    {
+        throw std::invalid_argument("Failed to convert base time to time_t");
+    }
+    double fractionalPartBase = 0.0;
+    size_t fractionalPosBase = timeStr.find_first_of('.', 19);
+    if (fractionalPosBase != std::string::npos)
+    {
+        std::string fractionalStrBase = timeStrBase.substr(fractionalPosBase + 1, 5);
+        std::istringstream fractionalStream(fractionalStrBase);
+        fractionalStream >> fractionalPartBase;
+        fractionalPartBase /= 100000.0;
+    }
+
+    //
+
+    std::tm timeStruct = {};
+    std::istringstream timeStream(timeStr.substr(0, 19));
+    timeStream >> std::get_time(&timeStruct, "%Y-%m-%dT%H:%M:%S");
+    if (timeStream.fail())
+    {
+        throw std::invalid_argument("Invalid time string format");
+    }
+    time_t adjustedTime = std::mktime(&timeStruct);
+    if (adjustedTime == -1)
+    {
+        throw std::invalid_argument("Failed to convert time string to time_t");
+    }
+
+    double fractionalPart = 0.0;
+    size_t fractionalPos = timeStr.find_first_of('.', 19);
+    if (fractionalPos != std::string::npos) {
+        std::string fractionalStr = timeStr.substr(fractionalPos + 1, 5);
+        std::istringstream fractionalStream(fractionalStr);
+        fractionalStream >> fractionalPart;
+        fractionalPart /= 100000.0;
+    }
+
+    //
+
+    double timeDifference = difftime(adjustedTime, baseTime);
+    return timeDifference + fractionalPart - fractionalPartBase;
 }

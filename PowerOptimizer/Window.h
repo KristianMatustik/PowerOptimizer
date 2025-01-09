@@ -4,6 +4,8 @@
 #include "TrackSettingsDialog.h"
 #include <msclr/marshal_cppstd.h>
 #include <iostream>
+#include "ModelSettingsDialog.h"
+#include <cliext/vector>
 
 namespace PowerOptimizer
 {
@@ -14,6 +16,7 @@ namespace PowerOptimizer
 	using namespace System::Data;
 	using namespace System::Drawing;
 	using namespace msclr::interop;
+	using namespace System::Threading::Tasks;
 
 	/// <summary>
 	/// Summary for Window
@@ -61,9 +64,9 @@ namespace PowerOptimizer
 
 	private: System::Windows::Forms::ToolStripDropDownButton^ toolStripDropDownTrack;
 	private: System::Windows::Forms::ToolStripDropDownButton^ toolStripDropDownCyclist;
-	private: System::Windows::Forms::ToolStripButton^ toolStripButtonModelSetup;
+
 	private: System::Windows::Forms::ToolStripSeparator^ toolStripSeparator1;
-	private: System::Windows::Forms::ToolStripButton^ toolStripButtonSolve;
+
 	private: System::Windows::Forms::ToolStripButton^ toolStripButtonCancel;
 	private: System::Windows::Forms::ToolStripSeparator^ toolStripSeparator2;
 	private: System::Windows::Forms::ToolStripProgressBar^ toolStripProgressBarSolvingState;
@@ -84,6 +87,7 @@ namespace PowerOptimizer
 	private: System::Windows::Forms::ToolStripMenuItem^ toolStripMenuCyclistSaveFile;
 
 	private: System::Windows::Forms::ToolStripMenuItem^ toolStripMenuViewMap;
+	private: System::Windows::Forms::ToolStripButton^ toolStripButtonSolve;
 	private: System::Windows::Forms::ToolStripMenuItem^ toolStripMenuViewGraph;
 
 
@@ -111,15 +115,14 @@ namespace PowerOptimizer
 			this->toolStripMenuCyclistSetup = (gcnew System::Windows::Forms::ToolStripMenuItem());
 			this->toolStripSeparator6 = (gcnew System::Windows::Forms::ToolStripSeparator());
 			this->toolStripMenuCyclistSaveFile = (gcnew System::Windows::Forms::ToolStripMenuItem());
-			this->toolStripButtonModelSetup = (gcnew System::Windows::Forms::ToolStripButton());
 			this->toolStripSeparator1 = (gcnew System::Windows::Forms::ToolStripSeparator());
-			this->toolStripButtonSolve = (gcnew System::Windows::Forms::ToolStripButton());
 			this->toolStripButtonCancel = (gcnew System::Windows::Forms::ToolStripButton());
 			this->toolStripSeparator2 = (gcnew System::Windows::Forms::ToolStripSeparator());
 			this->toolStripProgressBarSolvingState = (gcnew System::Windows::Forms::ToolStripProgressBar());
 			this->toolStripDropDownView = (gcnew System::Windows::Forms::ToolStripDropDownButton());
 			this->toolStripMenuViewMap = (gcnew System::Windows::Forms::ToolStripMenuItem());
 			this->toolStripMenuViewGraph = (gcnew System::Windows::Forms::ToolStripMenuItem());
+			this->toolStripButtonSolve = (gcnew System::Windows::Forms::ToolStripButton());
 			this->toolStrip->SuspendLayout();
 			this->SuspendLayout();
 			// 
@@ -127,10 +130,10 @@ namespace PowerOptimizer
 			// 
 			this->toolStrip->Font = (gcnew System::Drawing::Font(L"Segoe UI", 12));
 			this->toolStrip->GripStyle = System::Windows::Forms::ToolStripGripStyle::Hidden;
-			this->toolStrip->Items->AddRange(gcnew cli::array< System::Windows::Forms::ToolStripItem^  >(9) {
+			this->toolStrip->Items->AddRange(gcnew cli::array< System::Windows::Forms::ToolStripItem^  >(8) {
 				this->toolStripDropDownTrack,
-					this->toolStripDropDownCyclist, this->toolStripButtonModelSetup, this->toolStripSeparator1, this->toolStripButtonSolve, this->toolStripButtonCancel,
-					this->toolStripSeparator2, this->toolStripProgressBarSolvingState, this->toolStripDropDownView
+					this->toolStripDropDownCyclist, this->toolStripSeparator1, this->toolStripButtonSolve, this->toolStripButtonCancel, this->toolStripSeparator2,
+					this->toolStripProgressBarSolvingState, this->toolStripDropDownView
 			});
 			this->toolStrip->Location = System::Drawing::Point(0, 0);
 			this->toolStrip->Name = L"toolStrip";
@@ -250,31 +253,10 @@ namespace PowerOptimizer
 			this->toolStripMenuCyclistSaveFile->Text = L"Save file";
 			this->toolStripMenuCyclistSaveFile->Click += gcnew System::EventHandler(this, &Window::toolStripMenuCyclistSaveFile_Click);
 			// 
-			// toolStripButtonModelSetup
-			// 
-			this->toolStripButtonModelSetup->DisplayStyle = System::Windows::Forms::ToolStripItemDisplayStyle::Text;
-			this->toolStripButtonModelSetup->Image = (cli::safe_cast<System::Drawing::Image^>(resources->GetObject(L"toolStripButtonModelSetup.Image")));
-			this->toolStripButtonModelSetup->ImageTransparentColor = System::Drawing::Color::Magenta;
-			this->toolStripButtonModelSetup->Name = L"toolStripButtonModelSetup";
-			this->toolStripButtonModelSetup->Size = System::Drawing::Size(100, 28);
-			this->toolStripButtonModelSetup->Text = L"Model setup";
-			this->toolStripButtonModelSetup->ToolTipText = L"Model setup";
-			this->toolStripButtonModelSetup->Click += gcnew System::EventHandler(this, &Window::toolStripButtonModelSetup_Click);
-			// 
 			// toolStripSeparator1
 			// 
 			this->toolStripSeparator1->Name = L"toolStripSeparator1";
 			this->toolStripSeparator1->Size = System::Drawing::Size(6, 31);
-			// 
-			// toolStripButtonSolve
-			// 
-			this->toolStripButtonSolve->DisplayStyle = System::Windows::Forms::ToolStripItemDisplayStyle::Text;
-			this->toolStripButtonSolve->Image = (cli::safe_cast<System::Drawing::Image^>(resources->GetObject(L"toolStripButtonSolve.Image")));
-			this->toolStripButtonSolve->ImageTransparentColor = System::Drawing::Color::Magenta;
-			this->toolStripButtonSolve->Name = L"toolStripButtonSolve";
-			this->toolStripButtonSolve->Size = System::Drawing::Size(52, 28);
-			this->toolStripButtonSolve->Text = L"Solve";
-			this->toolStripButtonSolve->Click += gcnew System::EventHandler(this, &Window::toolStripButtonSolve_Click);
 			// 
 			// toolStripButtonCancel
 			// 
@@ -314,16 +296,26 @@ namespace PowerOptimizer
 			// toolStripMenuViewMap
 			// 
 			this->toolStripMenuViewMap->Name = L"toolStripMenuViewMap";
-			this->toolStripMenuViewMap->Size = System::Drawing::Size(180, 26);
+			this->toolStripMenuViewMap->Size = System::Drawing::Size(123, 26);
 			this->toolStripMenuViewMap->Text = L"Map";
 			this->toolStripMenuViewMap->Click += gcnew System::EventHandler(this, &Window::toolStripMenuViewMap_Click);
 			// 
 			// toolStripMenuViewGraph
 			// 
 			this->toolStripMenuViewGraph->Name = L"toolStripMenuViewGraph";
-			this->toolStripMenuViewGraph->Size = System::Drawing::Size(180, 26);
+			this->toolStripMenuViewGraph->Size = System::Drawing::Size(123, 26);
 			this->toolStripMenuViewGraph->Text = L"Graph";
 			this->toolStripMenuViewGraph->Click += gcnew System::EventHandler(this, &Window::toolStripMenuViewGraph_Click);
+			// 
+			// toolStripButtonSolve
+			// 
+			this->toolStripButtonSolve->DisplayStyle = System::Windows::Forms::ToolStripItemDisplayStyle::Text;
+			this->toolStripButtonSolve->Image = (cli::safe_cast<System::Drawing::Image^>(resources->GetObject(L"toolStripButtonSolve.Image")));
+			this->toolStripButtonSolve->ImageTransparentColor = System::Drawing::Color::Magenta;
+			this->toolStripButtonSolve->Name = L"toolStripButtonSolve";
+			this->toolStripButtonSolve->Size = System::Drawing::Size(52, 28);
+			this->toolStripButtonSolve->Text = L"Solve";
+			this->toolStripButtonSolve->Click += gcnew System::EventHandler(this, &Window::toolStripButtonSolve_Click);
 			// 
 			// Window
 			// 
@@ -549,14 +541,66 @@ namespace PowerOptimizer
 				}
 			}
 		}
-		private: System::Void toolStripButtonModelSetup_Click(System::Object^ sender, System::EventArgs^ e)
-		{
-
-			updateMenuItems();
-		}
 		private: System::Void toolStripButtonSolve_Click(System::Object^ sender, System::EventArgs^ e)
 		{
-			//optimizer->solve_AP(500,1000);
+			PowerOptimizer::ModelSettingsDialog^ dialog = gcnew PowerOptimizer::ModelSettingsDialog();
+			try
+			{
+				if (dialog->ShowDialog() == System::Windows::Forms::DialogResult::OK)
+				{
+					if (dialog->radioButton1->Checked)
+					{
+						double AP = (double)dialog->numericUpDown_AP->Value;
+						double MP = (double)dialog->numericUpDown_AP_max->Value;
+						if (MP <= AP)
+						{
+							MessageBox::Show("Max power can not be lower than average", "Info", MessageBoxButtons::OK, MessageBoxIcon::Information);
+							return;
+						}
+						else
+						{
+							toolStripProgressBarSolvingState->Value = 50; updateMenuItems();
+							optimizer->solve_AP(AP, MP);
+							toolStripProgressBarSolvingState->Value = 0;
+						}
+					}
+					else if (dialog->radioButton2->Checked)
+					{
+						double NP = (double)dialog->numericUpDown_NP->Value;
+						double MP = (double)dialog->numericUpDown_NP_max->Value;
+						if (MP <= NP)
+						{
+							MessageBox::Show("Max power can not be lower than normalized", "Info", MessageBoxButtons::OK, MessageBoxIcon::Information);
+							return;
+						}
+						else
+						{
+							optimizer->solve_NP(NP, MP);
+						}
+					}
+					else if (dialog->radioButton3->Checked)
+					{
+						double CP = (double)dialog->numericUpDown_CP->Value;
+						double MP = (double)dialog->numericUpDown_CP_max->Value;
+						double W = (double)dialog->numericUpDown_W->Value;
+						if (MP <= CP)
+						{
+							MessageBox::Show("Max power can not be lower than critical", "Info", MessageBoxButtons::OK, MessageBoxIcon::Information);
+							return;
+						}
+						else
+						{
+							optimizer->solve_CP(CP, W*1000, MP);
+						}
+					}
+					MessageBox::Show("Solution found, save the track as gpx file.", "Info", MessageBoxButtons::OK, MessageBoxIcon::Information);
+				}
+			}
+			finally
+			{
+				delete dialog;
+			}
+
 			updateMenuItems();
 		}
 		private: System::Void toolStripButtonCancel_Click(System::Object^ sender, System::EventArgs^ e)
@@ -567,11 +611,11 @@ namespace PowerOptimizer
 		}
 		private: void updateMenuItems()
 		{
+			toolStripProgressBarSolvingState->Value = optimizer->progress;
 			bool solving = toolStripProgressBarSolvingState->Value > 0;
 
 			toolStripDropDownTrack->Enabled = !solving;
 			toolStripDropDownCyclist->Enabled = !solving;
-			toolStripButtonModelSetup->Enabled = !solving;
 			toolStripButtonSolve->Enabled = !solving && optimizer->track() && optimizer->cyclist();
 			toolStripButtonCancel->Enabled = solving;
 			
@@ -579,6 +623,8 @@ namespace PowerOptimizer
 			toolStripMenuTrackSaveFile->Enabled = optimizer->track();
 			toolStripMenuTrackSetup->Enabled = optimizer->track();
 			toolStripMenuCyclistSaveFile->Enabled = optimizer->cyclist();
+
+			draw();
 		}
 
 		private: System::Void toolStripMenuViewMap_Click(System::Object^ sender, System::EventArgs^ e)

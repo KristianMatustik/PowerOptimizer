@@ -217,6 +217,7 @@ namespace PowerOptimizer
 			this->numericUpDown_WheelInertia->Name = L"numericUpDown_WheelInertia";
 			this->numericUpDown_WheelInertia->Size = System::Drawing::Size(498, 20);
 			this->numericUpDown_WheelInertia->TabIndex = 13;
+			this->numericUpDown_WheelInertia->Value = System::Decimal(gcnew cli::array< System::Int32 >(4) { 25, 0, 0, 65536 });
 			// 
 			// label_Mass
 			// 
@@ -440,7 +441,7 @@ namespace PowerOptimizer
 			this->label_Yaw_15to20->Name = L"label_Yaw_15to20";
 			this->label_Yaw_15to20->Size = System::Drawing::Size(67, 25);
 			this->label_Yaw_15to20->TabIndex = 3;
-			this->label_Yaw_15to20->Text = L"15-20";
+			this->label_Yaw_15to20->Text = L"15";
 			this->label_Yaw_15to20->TextAlign = System::Drawing::ContentAlignment::MiddleCenter;
 			// 
 			// label_Yaw_20up
@@ -466,7 +467,7 @@ namespace PowerOptimizer
 			this->label_Yaw_0to5->Name = L"label_Yaw_0to5";
 			this->label_Yaw_0to5->Size = System::Drawing::Size(67, 25);
 			this->label_Yaw_0to5->TabIndex = 0;
-			this->label_Yaw_0to5->Text = L"0-5";
+			this->label_Yaw_0to5->Text = L"0";
 			this->label_Yaw_0to5->TextAlign = System::Drawing::ContentAlignment::MiddleCenter;
 			// 
 			// label_YawRange
@@ -476,9 +477,9 @@ namespace PowerOptimizer
 			this->label_YawRange->AutoSize = true;
 			this->label_YawRange->Location = System::Drawing::Point(4, 1);
 			this->label_YawRange->Name = L"label_YawRange";
-			this->label_YawRange->Size = System::Drawing::Size(58, 25);
+			this->label_YawRange->Size = System::Drawing::Size(28, 25);
 			this->label_YawRange->TabIndex = 5;
-			this->label_YawRange->Text = L"Yaw range";
+			this->label_YawRange->Text = L"Yaw";
 			this->label_YawRange->TextAlign = System::Drawing::ContentAlignment::MiddleLeft;
 			// 
 			// label_CdA
@@ -503,7 +504,7 @@ namespace PowerOptimizer
 			this->label_Yaw_10to15->Name = L"label_Yaw_10to15";
 			this->label_Yaw_10to15->Size = System::Drawing::Size(67, 25);
 			this->label_Yaw_10to15->TabIndex = 2;
-			this->label_Yaw_10to15->Text = L"10-15";
+			this->label_Yaw_10to15->Text = L"10";
 			this->label_Yaw_10to15->TextAlign = System::Drawing::ContentAlignment::MiddleCenter;
 			// 
 			// label_Yaw_5to10
@@ -516,7 +517,7 @@ namespace PowerOptimizer
 			this->label_Yaw_5to10->Name = L"label_Yaw_5to10";
 			this->label_Yaw_5to10->Size = System::Drawing::Size(67, 25);
 			this->label_Yaw_5to10->TabIndex = 1;
-			this->label_Yaw_5to10->Text = L"5-10";
+			this->label_Yaw_5to10->Text = L"5";
 			this->label_Yaw_5to10->TextAlign = System::Drawing::ContentAlignment::MiddleCenter;
 			// 
 			// numericUpDown_Yaw_0to5

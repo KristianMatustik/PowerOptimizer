@@ -6,23 +6,23 @@
 class Cyclist
 {
 private:
-	double mass;					//mass of the system=rider+bike+equipment
-	double mass_wheelInertia;		//inertia of wheels, as artifical mass for rolling, no slip (= I/R^2 ~= bit less than weight of the wheels (mass mostly in the rim))
-	std::vector<double> CdA_TT;		//size n, CdA at different yaw angles, e.g. [0.2,0.21,0.22] (at 0-5°/5-10°/10°-180° respectively)
-	std::vector<double> CdA_TT_yaw; //size n-1, the dividing points of CdA_TT, eg. [5°,10°] for prev example (0 and 180 are always considered 1st/last)
+	double mass;					//mass of the system = rider + bike + equipment
+	double mass_wheelInertia;		//inertia of wheels as artifical mass for rolling (= I/R^2 ~= usually bit less than weight of the wheels (mass mostly in the rim))
+	std::vector<double> CdA_TT;		//size n, CdA at different yaw angles, e.g. [0.2, 0.21, 0.22] (at 0°/5°/10+° respectively)
+	std::vector<double> CdA_TT_yaw; //size n-1, the dividing points of CdA_TT, eg. [5°,10°] for prev example (0° always considered 1st)
 	double CdA_oos;					//CdA when riding out of saddle
-	double CdA_oos_power;			//power transition point, when cyclist rides out of saddle (e.g. 500 W)
-	double efficiency;				//power train efficiency, how much power turn into actual work done (e.g. 0.97 = 97 %)
-	double brakingDeceleration;			//force at which can rider decelerate when braking, 5000N
-	double turnBankAngle;			//angle at which rider can lean the bike going through corner
+	double CdA_oos_power;			//power transition point, when cyclist rides out of saddle (e.g. 500 W, with higher power CdA_oos_power is used)
+	double efficiency;				//power train efficiency, how much power turns into actual work done (e.g. 0.97 = 97 %)
+	double brakingDeceleration;		//acceleration while braking m/s^2
+	double turnBankAngle;			//angle at which rider can lean the bike going through corner (0-90, usually ~30)
 
 
-	double get_CdA_yawStepsPowerOOS(double yaw = 0, double power = 0) const;
-	double get_CdA_yawInterpolatedPowerOOS(double yaw = 0, double power = 0) const;
+	double get_CdA_yawStepsPowerOOS(double yaw = 0, double power = 0) const; //gives fixed value of CdA_TT, eg. 0.21 for 7,5°
+	double get_CdA_yawInterpolatedPowerOOS(double yaw = 0, double power = 0) const;  //gives interpolated value of CdA_TT, eg. 0.215 for 7,5°
 
 public:
-	Cyclist(double mass = DEFAULT_MASS, double CdA_TT = DEFAULT_CDA_TT, double CdA_oos = DEFAULT_CDA_OOS, double CdA_oos_power = DEFAULT_POWER_OOS,
-		double efficiency = DEFAULT_EFFICIENCY, double brakingForce = DEFAULT_BRAKING_DECELERATION, double turnBankAngle = DEFAULT_BANKANGLE, double wheelMassInertia = DEFAULT_WHEEL_INERTIA);
+	Cyclist(double mass = MASS, double CdA_TT = CDA_TT, double CdA_oos = CDA_OOS, double CdA_oos_power = POWER_OOS,
+		double efficiency = EFFICIENCY, double brakingForce = BRAKING_DECELERATION, double turnBankAngle = BANKANGLE, double wheelMassInertia = WHEEL_INERTIA);
 	~Cyclist();
 
 	double get_mass() const;

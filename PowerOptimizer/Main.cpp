@@ -12,21 +12,33 @@ using namespace System::Windows::Forms;
 int main(array<String^>^ args)
 {
 	Track t;
-	Cyclist c(90, 0.25);
-	Optimizer o;
+	Cyclist c(92, 0.28, 0.4, 500, 0.97, 2, 30, 2.5);
+	//Cyclist c(90, 0.22, 0.22, 5000, 0.97, 2, 30, 2.5);
+	Tester tst(t, c);
+	Optimizer o(&t, &c);
 
-	o.track() = &t;
-	o.cyclist() = &c;
-	c.save("cyclist_test");
+	//t.load_GPX("gpx/test.gpx");
+	//t.set_corners(c);
 
-	t.load_GPX("test.gpx");
-	t.initial_solution(c, 300);
+	
+	tst.setHill(1000, 0.1, 500);
+	//tst.setA(1000, 0.1);
+	//tst.setFlat(500);
+	//tst.setWind(1000, -5);
 
-	Tester tst(t,c);
+	o.solve_AP(360, 600,5);
+	//t.save_GPX("gpx/0.gpx");
 
-	//tst.print();
-	//o.solve_NP(300);
-	//tst.print();
+	//o.solve_CP(300,10000,600,-1,3);
+	t.save_GPX("gpx/0.gpx");
+	//t.save_GPX("gpx/CP_real.gpx");
+
+	//Track t2;
+	//t2.new_copy(&t);
+	//o.solve_CP(300,10000,600,5);
+	//t.save_GPX("gpx/0-t.gpx");
+
+	//double tim = t.get_total_time();
 
 	Application::EnableVisualStyles();
 	Application::SetCompatibleTextRenderingDefault(false);

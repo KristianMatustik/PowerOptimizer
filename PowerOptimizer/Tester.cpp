@@ -32,22 +32,18 @@ Cyclist& Tester::cyclist()
 	return this->_cyclist;
 }
 
+
 void Tester::print()
 {
 	int size = 10;
-	std::vector<double> gradient = optimizer.calculate_gradient_NP();
-	double max = *std::max_element(gradient.begin(), gradient.end());
-	double adjust = 99 / max;
 	double d = 0;
 
-	gradient.push_back(0);
 	printColumn("i", size);
 	printColumn("d", size);
 	printColumn("h", size);
 	printColumn("P", size);
 	printColumn("v", size);
 	printColumn("t", size);
-	printColumn("g", size);
 	std::cout << std::endl;
 	for (int i = 0; i < _track.size(); i++)
 	{
@@ -57,7 +53,6 @@ void Tester::print()
 		printColumn(_track[i].get_power(), size);
 		printColumn(_track[i].get_speed()*3.6, size);
 		printColumn(_track[i].get_time(), size);
-		printColumn(gradient[i]*adjust, size);
 		std::cout << std::endl;
 		d += _track[i].get_next_distance();
 	}
@@ -69,9 +64,25 @@ void Tester::setFlat(int length)
 	_track.clear();
 	for (int i = 0; i < length; i++)
 	{
-		_track.push_xy(i * step, 0);
+		_track.push_gps(i * step * m, 0);
 	}
-	_track.set_connections();
+
+	_track.set_connections_gps();
+}
+
+void Tester::setWind(int length, double v)
+{
+	_track.clear();
+	for (int i = 0; i < length/2; i++)
+	{
+		_track.push_gps(i * step * m, 0);
+	}
+	for (int i = length / 2; i > 0; i--)
+	{
+		_track.push_gps(i * step * m, 0);
+	}
+	_track.set_connections_gps();
+	_track.set_wind(0, v);
 }
 
 void Tester::setSquare(int sideLength)
@@ -93,7 +104,8 @@ void Tester::setSquare(int sideLength)
 	{
 		_track.push_xy(0, y * step);
 	}
-	_track.set_connections();
+
+	_track.set_connections_xy();
 }
 
 void Tester::setHill(int length, double slope, int start)
@@ -101,15 +113,31 @@ void Tester::setHill(int length, double slope, int start)
 	_track.clear();
 	for (int i = 0; i < start; i++)
 	{
-		_track.push_xy(i*step, 0);
+		_track.push_gps(i*step*m, 0);
 	}
 
 	for (int i = start; i < length; i++)
 	{
-		_track.push_xy(i * step, 0, slope * (i - start + 1) * step);
+		_track.push_gps(i * step * m, 0, slope * (i - start + 1) * step);
 	}
 
-	_track.set_connections();
+	_track.set_connections_gps();
+}
+
+void Tester::setA(int length, double slope)
+{
+	_track.clear();
+	for (int i = 0; i < length/2; i++)
+	{
+		_track.push_gps(i * step * m, 0, slope * (i) * step);
+	}
+
+	for (int i = length / 2; i < length; i++)
+	{
+		_track.push_gps(i * step * m, 0, slope * (length - i) * step);
+	}
+
+	_track.set_connections_gps();
 }
 
 void Tester::setCorner(int length, double radius)
@@ -136,5 +164,5 @@ void Tester::setCorner(int length, double radius)
 		_track.push_xy(x, y);
 	}
 
-	_track.set_connections();
+	_track.set_connections_xy();
 }

@@ -328,7 +328,7 @@ void Optimizer::optimize_CP(double CP, double W_max, double P_max, double dt, do
         t.new_copy(_track, start, end);
         t.update_times_only();
         double W_start = t.get_wbal(0);
-        double W_end = t.get_wbal(t.size() - 1); _track->save_GPX("gpx/0.gpx");
+        double W_end = t.get_wbal(t.size() - 1);
         o.optimize_simple_CP(v_start, CP, W_max, P_max, W_start, W_end, dt, steps, firstStepDP, dW, W_eps);
         t.set_final_speed(_cyclist, v_end);
         _track->copy(&t, start, end);

@@ -17,6 +17,12 @@ namespace PowerOptimizer
 	using namespace System::Drawing;
 	using namespace msclr::interop;
 	using namespace System::Threading::Tasks;
+	using namespace System::Collections::Generic;
+	using namespace System;
+	using namespace System::Windows::Forms;
+	using namespace System::Windows::Forms::DataVisualization::Charting;
+	using namespace System::Collections::Generic;
+
 
 	/// <summary>
 	/// Summary for Window
@@ -58,7 +64,7 @@ namespace PowerOptimizer
 		System::ComponentModel::Container ^components;
 
 	private: Optimizer* optimizer = nullptr;
-	private: int view = 0; //0=map, 1=graph
+	private: int view = 1; //0=map, 1=graph
 
 	private: System::Windows::Forms::ToolStrip^ toolStrip;
 
@@ -88,6 +94,9 @@ namespace PowerOptimizer
 
 	private: System::Windows::Forms::ToolStripMenuItem^ toolStripMenuViewMap;
 	private: System::Windows::Forms::ToolStripButton^ toolStripButtonSolve;
+	private: System::Windows::Forms::DataVisualization::Charting::Chart^ chart;
+	private: System::Windows::Forms::DataVisualization::Charting::ChartArea^ chartArea1;
+	private: System::Windows::Forms::DataVisualization::Charting::Legend^ legend1;
 	private: System::Windows::Forms::ToolStripMenuItem^ toolStripMenuViewGraph;
 
 
@@ -116,14 +125,18 @@ namespace PowerOptimizer
 			this->toolStripSeparator6 = (gcnew System::Windows::Forms::ToolStripSeparator());
 			this->toolStripMenuCyclistSaveFile = (gcnew System::Windows::Forms::ToolStripMenuItem());
 			this->toolStripSeparator1 = (gcnew System::Windows::Forms::ToolStripSeparator());
+			this->toolStripButtonSolve = (gcnew System::Windows::Forms::ToolStripButton());
 			this->toolStripButtonCancel = (gcnew System::Windows::Forms::ToolStripButton());
 			this->toolStripSeparator2 = (gcnew System::Windows::Forms::ToolStripSeparator());
 			this->toolStripProgressBarSolvingState = (gcnew System::Windows::Forms::ToolStripProgressBar());
 			this->toolStripDropDownView = (gcnew System::Windows::Forms::ToolStripDropDownButton());
 			this->toolStripMenuViewMap = (gcnew System::Windows::Forms::ToolStripMenuItem());
 			this->toolStripMenuViewGraph = (gcnew System::Windows::Forms::ToolStripMenuItem());
-			this->toolStripButtonSolve = (gcnew System::Windows::Forms::ToolStripButton());
+			this->chart = (gcnew System::Windows::Forms::DataVisualization::Charting::Chart());
+			this->chartArea1 = (gcnew System::Windows::Forms::DataVisualization::Charting::ChartArea());
+			this->legend1 = (gcnew System::Windows::Forms::DataVisualization::Charting::Legend());
 			this->toolStrip->SuspendLayout();
+			(cli::safe_cast<System::ComponentModel::ISupportInitialize^>(this->chart))->BeginInit();
 			this->SuspendLayout();
 			// 
 			// toolStrip
@@ -258,6 +271,16 @@ namespace PowerOptimizer
 			this->toolStripSeparator1->Name = L"toolStripSeparator1";
 			this->toolStripSeparator1->Size = System::Drawing::Size(6, 31);
 			// 
+			// toolStripButtonSolve
+			// 
+			this->toolStripButtonSolve->DisplayStyle = System::Windows::Forms::ToolStripItemDisplayStyle::Text;
+			this->toolStripButtonSolve->Image = (cli::safe_cast<System::Drawing::Image^>(resources->GetObject(L"toolStripButtonSolve.Image")));
+			this->toolStripButtonSolve->ImageTransparentColor = System::Drawing::Color::Magenta;
+			this->toolStripButtonSolve->Name = L"toolStripButtonSolve";
+			this->toolStripButtonSolve->Size = System::Drawing::Size(52, 28);
+			this->toolStripButtonSolve->Text = L"Solve";
+			this->toolStripButtonSolve->Click += gcnew System::EventHandler(this, &Window::toolStripButtonSolve_Click);
+			// 
 			// toolStripButtonCancel
 			// 
 			this->toolStripButtonCancel->DisplayStyle = System::Windows::Forms::ToolStripItemDisplayStyle::Text;
@@ -307,21 +330,26 @@ namespace PowerOptimizer
 			this->toolStripMenuViewGraph->Text = L"Graph";
 			this->toolStripMenuViewGraph->Click += gcnew System::EventHandler(this, &Window::toolStripMenuViewGraph_Click);
 			// 
-			// toolStripButtonSolve
+			// chart
 			// 
-			this->toolStripButtonSolve->DisplayStyle = System::Windows::Forms::ToolStripItemDisplayStyle::Text;
-			this->toolStripButtonSolve->Image = (cli::safe_cast<System::Drawing::Image^>(resources->GetObject(L"toolStripButtonSolve.Image")));
-			this->toolStripButtonSolve->ImageTransparentColor = System::Drawing::Color::Magenta;
-			this->toolStripButtonSolve->Name = L"toolStripButtonSolve";
-			this->toolStripButtonSolve->Size = System::Drawing::Size(52, 28);
-			this->toolStripButtonSolve->Text = L"Solve";
-			this->toolStripButtonSolve->Click += gcnew System::EventHandler(this, &Window::toolStripButtonSolve_Click);
+			this->chart->Dock = System::Windows::Forms::DockStyle::Fill;
+			this->chart->Location = System::Drawing::Point(0, 31);
+			this->chart->Name = L"chart";
+			this->chart->Size = System::Drawing::Size(784, 530);
+			this->chart->TabIndex = 1;
+			this->chart->Text = L"chart1";
+			this->chart->ChartAreas->Add(chartArea1);
+			legend1->Font = gcnew System::Drawing::Font("Arial", 12);
+			legend1->Docking = Docking::Top;
+			legend1->Alignment = StringAlignment::Center;
+			this->chart->Legends->Add(legend1);
 			// 
 			// Window
 			// 
 			this->AutoScaleDimensions = System::Drawing::SizeF(7, 15);
 			this->AutoScaleMode = System::Windows::Forms::AutoScaleMode::Font;
 			this->ClientSize = System::Drawing::Size(784, 561);
+			this->Controls->Add(this->chart);
 			this->Controls->Add(this->toolStrip);
 			this->Font = (gcnew System::Drawing::Font(L"Microsoft Sans Serif", 9));
 			this->Margin = System::Windows::Forms::Padding(3, 4, 3, 4);
@@ -330,6 +358,7 @@ namespace PowerOptimizer
 			this->Text = L"PowerOptimizer";
 			this->toolStrip->ResumeLayout(false);
 			this->toolStrip->PerformLayout();
+			(cli::safe_cast<System::ComponentModel::ISupportInitialize^>(this->chart))->EndInit();
 			this->ResumeLayout(false);
 			this->PerformLayout();
 
@@ -605,7 +634,6 @@ namespace PowerOptimizer
 		}
 		private: System::Void toolStripButtonCancel_Click(System::Object^ sender, System::EventArgs^ e)
 		{
-
 			toolStripProgressBarSolvingState->Value = 0;
 			updateMenuItems();
 		}
@@ -630,10 +658,12 @@ namespace PowerOptimizer
 		private: System::Void toolStripMenuViewMap_Click(System::Object^ sender, System::EventArgs^ e)
 		{
 			view = 0;
+			updateMenuItems();
 		}
 		private: System::Void toolStripMenuViewGraph_Click(System::Object^ sender, System::EventArgs^ e)
 		{
 			view = 1;
+			updateMenuItems();
 		}
 
 		private: void draw()
@@ -643,10 +673,100 @@ namespace PowerOptimizer
 			case 0:
 				break;
 			case 1:
+				DisplayChart();
 				break;
 			default:
 				break;
 			}
 		}
+
+		void DisplayChart()
+		{
+			if (optimizer->track() == nullptr)
+				return;
+
+			chart->Series->Clear();
+
+
+			List<double>^ xDistance = gcnew List<double>();
+			List<double>^ yPower = gcnew List<double>();
+			List<double>^ yAltitude = gcnew List<double>();
+			List<double>^ ySpeed = gcnew List<double>();
+
+			double maxA = 0;
+			double minA = INF;
+			double maxP = 0;
+
+
+			xDistance->Add(0);
+			for (int i = 0; i < optimizer->track()->size(); i++)
+			{
+				double power = optimizer->track()->get_power(i);
+				double altitude = optimizer->track()->get_altitude(i);
+				double speed = optimizer->track()->get_speed(i);
+
+				if (i != 0)
+					xDistance->Add(xDistance[i - 1] + optimizer->track()->get_nextDistance(i - 1));
+				yPower->Add(power);
+				yAltitude->Add(altitude);
+				ySpeed->Add(speed * 3.6);
+
+				maxA = maxA > altitude ? maxA : altitude;
+				minA = minA < altitude ? minA : altitude;
+				maxP = maxP > power ? maxP : power;
+				maxP = maxP > speed ? maxP : speed;
+			}
+
+			Series^ series1 = gcnew Series();
+			series1->Name = "Power (W)";
+			series1->ChartType = SeriesChartType::Line;
+			series1->Points->DataBindXY(xDistance, yPower);
+
+			Series^ series2 = gcnew Series();
+			series2->Name = "Altitude (m)";
+			series2->ChartType = SeriesChartType::Line;
+			series2->Points->DataBindXY(xDistance, yAltitude);
+			series2->YAxisType = AxisType::Secondary;
+
+			Series^ series3 = gcnew Series();
+			series3->Name = "Speed (km/h)";
+			series3->ChartType = SeriesChartType::Line;
+			series3->Points->DataBindXY(xDistance, ySpeed);
+
+			chart->Series->Add(series1);
+			chart->Series->Add(series2);
+			chart->Series->Add(series3);
+
+			chart->ChartAreas[0]->AxisX->IsStartedFromZero = true;
+			chart->ChartAreas[0]->AxisX->LabelStyle->Format = "{0:0}";
+			chart->ChartAreas[0]->AxisX->Title = "Distance";
+			chart->ChartAreas[0]->AxisX->Minimum = 0;
+
+			chart->ChartAreas[0]->AxisY->LabelStyle->Format = "{0:0}";
+			chart->ChartAreas[0]->AxisY->Title = "Power/Speed";
+			chart->ChartAreas[0]->AxisY->Minimum = 0;
+			chart->ChartAreas[0]->AxisY->Maximum = 1.05 * maxP;
+			chart->ChartAreas[0]->AxisY->Interval = 50;
+
+			chart->ChartAreas[0]->AxisY2->LabelStyle->Format = "{0:0}";
+			chart->ChartAreas[0]->AxisY2->Title = "Altitude";
+			chart->ChartAreas[0]->AxisY2->Minimum = 50 * std::floor(0.95 * minA / 50);
+			chart->ChartAreas[0]->AxisY2->Maximum = 1.05 * maxA;
+			chart->ChartAreas[0]->AxisY2->Interval = 50;
+			chart->ChartAreas[0]->AxisY2->MajorGrid->LineColor = System::Drawing::Color::LightGray;
+
+			chart->ChartAreas[0]->AxisX->TitleFont = gcnew System::Drawing::Font("Arial", 14, System::Drawing::FontStyle::Bold);
+			chart->ChartAreas[0]->AxisY->TitleFont = gcnew System::Drawing::Font("Arial", 14, System::Drawing::FontStyle::Bold);
+			chart->ChartAreas[0]->AxisY2->TitleFont = gcnew System::Drawing::Font("Arial", 14, System::Drawing::FontStyle::Bold);
+
+			chart->ChartAreas[0]->AxisX->LabelStyle->Font = gcnew System::Drawing::Font("Arial", 12);
+			chart->ChartAreas[0]->AxisY->LabelStyle->Font = gcnew System::Drawing::Font("Arial", 12);
+			chart->ChartAreas[0]->AxisY2->LabelStyle->Font = gcnew System::Drawing::Font("Arial", 12);
+
+			series1->BorderWidth = 2;
+			series2->BorderWidth = 2;
+			series3->BorderWidth = 2;
+		}
+
 	};
 }

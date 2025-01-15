@@ -363,6 +363,7 @@ void Track::load_GPX(const std::string& filePath)
     }
 
     set_connections_gps();
+    calculate_speed();
 }
 
 void Track::save_GPX(const std::string& filePath) {
@@ -565,6 +566,18 @@ void Track::update_times_only()
     }
 }
 
+void Track::calculate_speed()
+{
+    for (int i = 0; i < route.size() - 1; i++)
+    {
+        double d = route[i].get_next_distance();
+        double t = route[i + 1].get_time() - route[i].get_time();
+        if (t != 0)
+            route[i].set_speed(d / t);
+    }
+    route[route.size() - 1].set_speed(route[route.size() - 1].get_speed());
+}
+
 double Track::get_power(int i) const
 {
     return route[i].get_power();
@@ -575,6 +588,21 @@ void Track::set_power(double P, int i)
     if (i < 0 || i > route.size() - 1)
         throw std::invalid_argument("Invalid index");
     route[i].set_power(P);
+}
+
+double Track::get_altitude(int i) const
+{
+    return route[i].get_altitude();
+}
+
+double Track::get_speed(int i) const
+{
+    return route[i].get_speed();
+}
+
+double Track::get_nextDistance(int i) const
+{
+    return route[i].get_next_distance();
 }
 
 double Track::get_next_time(int i)

@@ -114,10 +114,16 @@ public:
 	std::list<double> find_corners();			//one method gets indexes, the other speed limits - simplify later
 	std::list<double> find_corners_speed();
 	void set_final_speed(Cyclist* c, double v);
+
 	void update_times_only();
+	void calculate_speed();
 
 	double get_power(int i) const;
 	void set_power(double P, int i);
+
+	double get_altitude(int i) const;
+	double get_speed(int i) const;
+	double get_nextDistance(int i) const;
 
 	double get_next_time(int i);	//time from point i to i+1
 	double get_total_time(int i=-1) const;	//time from start to point i

@@ -161,7 +161,6 @@ std::vector<double> Optimizer::W_balance(double CP, double W_max, double W_start
     for (int i = 1; i < _track->size(); i++)
     {
         double W_new = W.back() + (CP - _track->get_power(i - 1)) * _track->get_next_time(i - 1);
-        //W_new = W_new < W_max ? W_new : W_max;
         W.push_back(W_new);
         _track->set_wbal(W_new, i);
     }
@@ -214,9 +213,7 @@ void Optimizer::optimize_simple_f(const std::function<double(double)>& f, const 
 
 void Optimizer::optimize_simple_CP(double v0, double CP, double W_max, double P_max, double W_start, double W_end, double dt, double steps, double firstStepDP, double dW, double W_eps)
 {
-    //if (W_start == W_max && W_end == 0)
-        _track->initial_solution(*_cyclist, CP,v0);
-    //_track->initial_solution(*_cyclist, CP + (W_start - W_end) / _track->get_total_time(), v0);
+    _track->initial_solution(*_cyclist, CP,v0);
 
     std::vector<double> dP = calculate_dP(AP, AP_inv, dW);
     std::vector<double> gradient = calculate_gradient(AP, AP_inv, dt, dW, dP);
@@ -258,7 +255,7 @@ void Optimizer::optimize_simple_CP(double v0, double CP, double W_max, double P_
 void Optimizer::optimize_f(const std::function<double(double)>& f, const std::function<double(double)>& f_inv, double P_lim, double P_max, double dt, double steps, double firstStepDP, double dW, double P_eps, double t_eps)
 {
     _track->set_corners(*_cyclist);
-    //_track->initial_solution(*_cyclist, P_lim, V0);
+
     optimize_simple_f(f, f_inv, V0, P_lim, P_max, dt, steps, firstStepDP, dW, P_eps, t_eps);
 
     std::list<double> corners_idx = _track->find_corners();
@@ -283,7 +280,7 @@ void Optimizer::optimize_f(const std::function<double(double)>& f, const std::fu
             v_end = v_end < corners_v.front() ? v_end : corners_v.front();
             corners_v.pop_front();
         }
-        //
+        
         t.new_copy(_track, start, end);
         t.update_times_only();
         double P_lim = t.averagePower_weighted(f, f_inv);
@@ -291,7 +288,7 @@ void Optimizer::optimize_f(const std::function<double(double)>& f, const std::fu
         t.set_final_speed(_cyclist, v_end); 
         _track->copy(&t, start, end);
         _track->update_times_only();
-        //
+        
         start = end + 1;
         v_start = v_end;
         v_end = INF;
@@ -327,7 +324,7 @@ void Optimizer::optimize_CP(double CP, double W_max, double P_max, double dt, do
             v_end = v_end < corners_v.front() ? v_end : corners_v.front();
             corners_v.pop_front();
         }
-        //
+        
         t.new_copy(_track, start, end);
         t.update_times_only();
         double W_start = t.get_wbal(0);
@@ -336,7 +333,7 @@ void Optimizer::optimize_CP(double CP, double W_max, double P_max, double dt, do
         t.set_final_speed(_cyclist, v_end);
         _track->copy(&t, start, end);
         _track->update_times_only();
-        //
+        
         start = end + 1;
         v_start = v_end;
         v_end = INF;
@@ -436,18 +433,6 @@ Track*& Optimizer::track()
     return _track;
 }
 
-/*
-std::vector<double> Optimizer::calculate_gradient_AP(double dt, double dW)
-{
-    return calculate_gradient(AP, AP_inv, dt, dW);
-}
-
-std::vector<double> Optimizer::calculate_gradient_NP(double dt, double dW)
-{
-    return calculate_gradient(NP, NP_inv, dt, dW);
-}
-*/
-
 void Optimizer::solve_AP(double P_lim, double P_max, double dt, double steps, double firstStepDP, double dW, double P_eps, double t_eps)
 {
     optimize_f(AP, AP_inv, P_lim, P_max, dt, steps, firstStepDP, dW, P_eps, t_eps);
@@ -459,8 +444,6 @@ void Optimizer::solve_AP(double P_lim, double P_max, double dt, double steps, do
 void Optimizer::solve_NP(double P_lim, double P_max, double dt, double steps, double firstStepDP, double dW, double P_eps, double t_eps)
 {
     optimize_f(NP, NP_inv, P_lim, P_max, dt, steps, firstStepDP, dW, P_eps, t_eps);
-    //_track->route[0].set_starting_speed(*_cyclist, 5);
-    //_track->update_time(*_cyclist);
     double ap = _track->averagePower_weighted(AP, AP_inv);
     double np = _track->averagePower_weighted(NP, NP_inv);
     double tim = _track->get_total_time();

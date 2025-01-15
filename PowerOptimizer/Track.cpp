@@ -392,12 +392,6 @@ void Track::save_GPX(const std::string& filePath) {
         ele->SetText(point.get_altitude());
         trkpt->InsertEndChild(ele);
 
-        /*
-        tinyxml2::XMLElement* wbal = doc.NewElement("wbal");    //used to save Wbal with CP model
-        wbal->SetText(point.get_wbal());
-        trkpt->InsertEndChild(wbal);
-        */
-
         tinyxml2::XMLElement* timeElem = doc.NewElement("time");
         std::string ts = Functions::time_to_string(point.get_time());
         timeElem->SetText(ts.c_str());

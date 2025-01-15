@@ -588,9 +588,8 @@ namespace PowerOptimizer
 						}
 						else
 						{
-							toolStripProgressBarSolvingState->Value = 50; updateMenuItems();
+							MessageBox::Show("Please wait while program is looking for solution.", "Info", MessageBoxButtons::OK, MessageBoxIcon::Information);
 							optimizer->solve_AP(AP, MP);
-							toolStripProgressBarSolvingState->Value = 0;
 						}
 					}
 					else if (dialog->radioButton2->Checked)
@@ -604,6 +603,7 @@ namespace PowerOptimizer
 						}
 						else
 						{
+							MessageBox::Show("Please wait while program is looking for solution.", "Info", MessageBoxButtons::OK, MessageBoxIcon::Information);
 							optimizer->solve_NP(NP, MP);
 						}
 					}
@@ -619,6 +619,7 @@ namespace PowerOptimizer
 						}
 						else
 						{
+							MessageBox::Show("Please wait while program is looking for solution.", "Info", MessageBoxButtons::OK, MessageBoxIcon::Information);
 							optimizer->solve_CP(CP, W*1000, MP);
 						}
 					}
@@ -739,7 +740,7 @@ namespace PowerOptimizer
 
 			chart->ChartAreas[0]->AxisX->IsStartedFromZero = true;
 			chart->ChartAreas[0]->AxisX->LabelStyle->Format = "{0:0}";
-			chart->ChartAreas[0]->AxisX->Title = "Distance";
+			chart->ChartAreas[0]->AxisX->Title = "Distance (m)";
 			chart->ChartAreas[0]->AxisX->Minimum = 0;
 
 			chart->ChartAreas[0]->AxisY->LabelStyle->Format = "{0:0}";

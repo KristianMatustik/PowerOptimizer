@@ -545,7 +545,7 @@ std::list<double> Track::find_corners_speed()
 void Track::set_final_speed(Cyclist* c, double v)
 {
     int i = route.size() - 1;
-    while (route[i].get_speed() > v)
+    while (route[i].get_speed() > v && i>0)
     {
         route[i].set_speed(v);
         route[i].set_power(0);

@@ -23,10 +23,10 @@ public:
 	std::vector<double> W_balance(double CP, double W_max, double W_start);
 
 	void optimize_simple_f(const std::function<double(double)>&, const std::function<double(double)>&, double v0, double P_lim, double P_max = INF, double dt = DT, double steps = STEPS, double firstStepDP = FIRST_STEP, double dW = DW_AP, double P_eps = P_EPS, double t_eps = T_EPS);
-	void optimize_simple_CP(double v0, double CP, double W_max, double P_max = INF, double W_start=-1, double W_end=0, double dt = DT, double steps = STEPS, double firstStepDP = FIRST_STEP, double dW = DW_AP, double W_eps = W_EPS);
+	void optimize_simple_CP(double v0, double CP, double W_max, double P_max = INF, double W_start=-1, double W_end=0, double dt = DT, double steps = STEPS, double firstStepDP = FIRST_STEP, double dW = DW_AP, double W_eps = W_EPS, double t_eps = T_EPS);
 
 	void optimize_f(const std::function<double(double)>&, const std::function<double(double)>&, double P_lim, double P_max = INF, double dt = DT, double steps = STEPS, double firstStepDP = FIRST_STEP, double dW = DW_AP, double P_eps = P_EPS, double t_eps = T_EPS);
-	void optimize_CP(double CP, double W_max, double P_max = INF, double dt = DT, double steps = STEPS, double firstStepDP = FIRST_STEP, double dW = DW_AP, double W_eps = W_EPS);
+	void optimize_CP(double CP, double W_max, double P_max = INF, double dt = DT, double steps = STEPS, double firstStepDP = FIRST_STEP, double dW = DW_AP, double W_eps = W_EPS, double t_eps = T_EPS);
 
 	std::vector<double> calculate_dP(const std::function<double(double)>& f,
 		const std::function<double(double)>& f_inv, double dW = DW_AP);

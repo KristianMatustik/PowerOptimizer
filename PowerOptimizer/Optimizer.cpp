@@ -68,6 +68,15 @@ void Optimizer::adjust_power_CP(double CP, double W_max, double W_start, double 
             _track->set_power(0, i);
     }
 
+    if (CP + (W_start + W_eps - W_end) / _track->get_total_time() > P_max - P_EPS)
+    {
+        for (int i = 0; i < _track->size(); i++)
+        {
+            _track->set_power(P_max, i);
+        }
+        return;
+    }
+
     std::vector<double> W = W_balance(CP, W_max, W_start);
 
     bool changed = true;
@@ -211,7 +220,7 @@ void Optimizer::optimize_simple_f(const std::function<double(double)>& f, const 
     }
 }
 
-void Optimizer::optimize_simple_CP(double v0, double CP, double W_max, double P_max, double W_start, double W_end, double dt, double steps, double firstStepDP, double dW, double W_eps)
+void Optimizer::optimize_simple_CP(double v0, double CP, double W_max, double P_max, double W_start, double W_end, double dt, double steps, double firstStepDP, double dW, double W_eps, double t_eps)
 {
     _track->initial_solution(*_cyclist, CP,v0);
 
@@ -242,7 +251,7 @@ void Optimizer::optimize_simple_CP(double v0, double CP, double W_max, double P_
         improve(AP,AP_inv,adj_gradient, dW, k);
         adjust_power_CP(CP, W_max, W_start, W_end, dP, gradient, P_max, W_eps);
 
-        if (oldTime < (*_track).get_total_time())
+        if (oldTime < (*_track).get_total_time() + t_eps)
         {
             k /= 2;
             steps--;
@@ -296,11 +305,11 @@ void Optimizer::optimize_f(const std::function<double(double)>& f, const std::fu
     _track->update_times_only();
 }
 
-void Optimizer::optimize_CP(double CP, double W_max, double P_max, double dt, double steps, double firstStepDP, double dW, double W_eps)
+void Optimizer::optimize_CP(double CP, double W_max, double P_max, double dt, double steps, double firstStepDP, double dW, double W_eps, double t_eps)
 {
     _track->set_corners(*_cyclist);
 
-    optimize_simple_CP(V0, CP, W_max, P_max, W_max, 0, dt, steps, firstStepDP, dW, W_eps);
+    optimize_simple_CP(V0, CP, W_max, P_max, W_max, 0, dt, steps, firstStepDP, dW, W_eps, t_eps);
 
     std::list<double> corners_idx = _track->find_corners();
     std::list<double> corners_v = _track->find_corners_speed();
@@ -329,7 +338,7 @@ void Optimizer::optimize_CP(double CP, double W_max, double P_max, double dt, do
         t.update_times_only();
         double W_start = t.get_wbal(0);
         double W_end = t.get_wbal(t.size() - 1);
-        o.optimize_simple_CP(v_start, CP, W_max, P_max, W_start, W_end, dt, steps, firstStepDP, dW, W_eps);
+        o.optimize_simple_CP(v_start, CP, W_max, P_max, W_start, W_end, dt, steps, firstStepDP, dW, W_eps, t_eps);
         t.set_final_speed(_cyclist, v_end);
         _track->copy(&t, start, end);
         _track->update_times_only();
